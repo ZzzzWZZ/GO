@@ -33,9 +33,7 @@
         .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:400px;width:100%}
         .mode-card{background:#1a1a2e;border-radius:16px;padding:20px;text-align:center;border:2px solid #333;cursor:pointer;transition:.3s}
         .mode-card:hover{border-color:#ffd100;transform:translateY(-4px)}
-        .mode-card .icon{font-size:40px;margin-bottom:8px}
-        .mode-card .name{font-size:16px;font-weight:800;color:#ffd100}
-        .mode-card .desc{font-size:11px;color:#888;margin-top:4px}
+        .mode-card .icon{font-size:40px;margin-bottom:8px}.mode-card .name{font-size:16px;font-weight:800;color:#ffd100}.mode-card .desc{font-size:11px;color:#888;margin-top:4px}
         .mode-tag{background:#333;color:#ffd100;padding:3px 12px;border-radius:10px;font-size:11px;margin-bottom:10px;display:inline-block}
         .room-info{font-size:12px;color:#888;margin:4px 0}
         .map-box{width:100%;max-width:400px;height:180px;border-radius:12px;overflow:hidden;border:2px solid #333;margin:10px 0;position:relative;background:#0a1a0a}
@@ -86,115 +84,38 @@
 </head>
 <body>
 
-<!-- 封面页 -->
 <div class="screen cover active" id="screenCover">
     <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
-    <div class="top-right">
-        <span id="userDisplay" style="color:#888;font-size:12px">未登录</span>
-        <button class="btn btn-sm btn-gold" id="btnLoginTop" onclick="showModal('authModal')">登录/注册</button>
-    </div>
-    <div class="logo">🏃</div>
-    <h1>撕名牌大作战</h1>
-    <p class="subtitle">⚡ 经典模式 · 象棋模式 · 多人实时对战</p>
-    <button class="btn btn-gold" id="btnEnter" disabled onclick="showModal('mainMenuModal')">⚡ 进入游戏</button>
+    <div class="top-right"><span id="userDisplay" style="color:#888;font-size:12px">未登录</span> <button class="btn btn-sm btn-gold" id="btnLoginTop">登录/注册</button></div>
+    <div class="logo">🏃</div><h1>撕名牌大作战</h1><p class="subtitle">⚡ 经典模式 · 象棋模式 · 多人实时对战</p>
+    <button class="btn btn-gold btn-disabled" id="btnEnter" disabled>⚡ 进入游戏</button>
     <p style="color:#e17055;font-size:11px;margin-top:8px" id="loginTip">⚠️ 请先登录</p>
 </div>
 
-<!-- 登录弹窗 -->
-<div class="modal" id="authModal">
-    <div class="modal-box">
-        <h3 id="authTitle">🔐 登录</h3>
-        <input type="text" id="authUsername" placeholder="用户名">
-        <input type="password" id="authPassword" placeholder="密码">
-        <button class="btn btn-gold" id="btnAuth" onclick="handleAuth()">登录</button>
-        <button class="btn btn-sm btn-gray" onclick="switchAuthMode()" style="margin-top:4px">没有账号？去注册</button>
-        <button class="btn btn-sm" onclick="closeModal('authModal')" style="background:transparent;color:#888;margin-top:4px">取消</button>
-    </div>
-</div>
+<div class="modal" id="authModal"><div class="modal-box"><h3 id="authTitle">🔐 登录</h3><input type="text" id="authUsername" placeholder="用户名"><input type="password" id="authPassword" placeholder="密码"><button class="btn btn-gold" id="btnAuth">登录</button><button class="btn btn-sm btn-gray" onclick="switchAuthMode()" style="margin-top:4px">没有账号？去注册</button><button class="btn btn-sm" onclick="closeModal('authModal')" style="background:transparent;color:#888;margin-top:4px">取消</button></div></div>
+<div class="modal" id="mainMenuModal"><div class="modal-box"><h3>📋 主菜单</h3><button class="btn btn-gold" onclick="closeModal('mainMenuModal');showScreen('screenModes')">🏠 创建房间</button><button class="btn btn-green" onclick="closeModal('mainMenuModal');showScreen('screenJoin')">🎮 加入房间</button><button class="btn btn-sm btn-gray" onclick="closeModal('mainMenuModal');showRules()">📖 游戏规则</button><button class="btn btn-sm" onclick="closeModal('mainMenuModal')" style="background:transparent;color:#888">取消</button></div></div>
 
-<!-- 主菜单弹窗 -->
-<div class="modal" id="mainMenuModal">
-    <div class="modal-box">
-        <h3>📋 主菜单</h3>
-        <button class="btn btn-gold" onclick="closeModal('mainMenuModal');showScreen('screenModes')">🏠 创建房间</button>
-        <button class="btn btn-green" onclick="closeModal('mainMenuModal');showScreen('screenJoin')">🎮 加入房间</button>
-        <button class="btn btn-sm btn-gray" onclick="closeModal('mainMenuModal');showRules()">📖 游戏规则</button>
-        <button class="btn btn-sm" onclick="closeModal('mainMenuModal')" style="background:transparent;color:#888">取消</button>
-    </div>
-</div>
-<!-- 模式选择页 -->
-<div class="screen modes" id="screenModes">
-    <h2>选择模式</h2>
-    <div class="mode-grid">
-        <div class="mode-card" onclick="createRoom('classic')"><div class="icon">🏆</div><div class="name">经典模式</div><div class="desc">最后存活者获胜</div></div>
-        <div class="mode-card" onclick="createRoom('chess')"><div class="icon">♟️</div><div class="name">象棋模式</div><div class="desc">身份+等级+阵营</div></div>
-    </div>
-    <button class="btn btn-back" onclick="showScreen('screenCover')">← 返回首页</button>
-</div>
+<div class="screen modes" id="screenModes"><h2>选择模式</h2><div class="mode-grid"><div class="mode-card" onclick="createRoom('classic')"><div class="icon">🏆</div><div class="name">经典模式</div><div class="desc">最后存活者获胜</div></div><div class="mode-card" onclick="createRoom('chess')"><div class="icon">♟️</div><div class="name">象棋模式</div><div class="desc">身份+等级+阵营</div></div></div><button class="btn btn-back" onclick="showScreen('screenCover')">← 返回首页</button></div>
 
-<!-- 加入房间页 -->
-<div class="screen" id="screenJoin" style="background:#1a1a2e">
-    <h2 style="color:#ffd100;margin-bottom:16px">🎮 加入房间</h2>
-    <input type="text" id="joinNameInput" placeholder="🎯 输入你的名字" style="max-width:400px">
-    <input type="text" id="joinRoomInput" placeholder="🔢 房间号（4位数字）" style="max-width:400px">
-    <button class="btn btn-green" onclick="joinRoom()" style="max-width:400px">🎮 加入房间</button>
-    <button class="btn btn-back" onclick="showScreen('screenCover')">← 返回首页</button>
-</div>
+<div class="screen" id="screenJoin" style="background:#1a1a2e"><h2 style="color:#ffd100;margin-bottom:16px">🎮 加入房间</h2><input type="text" id="joinRoomInput" placeholder="🔢 房间号（4位数字）" style="max-width:400px"><button class="btn btn-green" onclick="joinRoom()" style="max-width:400px">🎮 加入房间</button><button class="btn btn-back" onclick="showScreen('screenCover')">← 返回首页</button></div>
 
-<!-- 经典模式等待大厅 -->
-<div class="screen lobby" id="screenLobbyClassic">
-    <span class="mode-tag">🏆 经典模式</span>
-    <h2>⏳ 等待大厅</h2>
-    <p class="room-info">房间号：<strong style="color:#ffd100" id="classicRoomDisp">----</strong> <span id="classicHostTag"></span></p>
-    <div class="map-box" id="classicMapBox"><div class="map-inner" id="classicMapInner"></div><div class="map-label">📍 点击地图设定中心</div></div>
-    <div class="setting-row"><span>🗺️ 活动半径</span><select id="classicRange"><option value="100">100米</option><option value="200">200米</option><option value="300" selected>300米</option><option value="400">400米</option><option value="500">500米</option></select></div>
-    <div class="setting-row"><span>👥 阵营</span><select id="classicTeam" onchange="toggleTeamOptions('classic')"><option value="none">无阵营</option><option value="teams">红蓝两队</option></select></div>
-    <div class="setting-row" id="classicAssignRow" style="display:none"><span>🎲 分配方式</span><select id="classicAssign" onchange="toggleAssignMode('classic')"><option value="random">随机分配</option><option value="free">自由组队</option></select></div>
-    <div id="classicFreePanel" style="display:none;width:100%;max-width:400px"></div>
-    <div id="classicPlayerTags" class="player-tags"></div>
-    <p style="color:#888;font-size:12px">当前 <span id="classicCount">0</span> 人</p>
-    <button class="btn btn-green" id="classicStartBtn" style="display:none">⚡ 开始游戏</button>
-    <button class="btn btn-back" onclick="leaveLobby();showScreen('screenModes')">← 返回模式选择</button>
-</div>
+<div class="screen lobby" id="screenLobbyClassic"><span class="mode-tag">🏆 经典模式</span><h2>⏳ 等待大厅</h2><p class="room-info">房间号：<strong style="color:#ffd100" id="classicRoomDisp">----</strong> <span id="classicHostTag"></span></p><div class="map-box" id="classicMapBox"><div class="map-inner" id="classicMapInner"></div><div class="map-label">📍 点击地图设定中心</div></div><div class="setting-row"><span>🗺️ 活动半径</span><select id="classicRange"><option value="100">100米</option><option value="200">200米</option><option value="300" selected>300米</option><option value="400">400米</option><option value="500">500米</option></select></div><div class="setting-row"><span>👥 阵营</span><select id="classicTeam" onchange="toggleTeamOptions('classic')"><option value="none">无阵营</option><option value="teams">红蓝两队</option></select></div><div class="setting-row" id="classicAssignRow" style="display:none"><span>🎲 分配方式</span><select id="classicAssign" onchange="toggleAssignMode('classic')"><option value="random">随机分配</option><option value="free">自由组队</option></select></div><div id="classicFreePanel" style="display:none;width:100%;max-width:400px"></div><div id="classicPlayerTags" class="player-tags"></div><p style="color:#888;font-size:12px">当前 <span id="classicCount">0</span> 人</p><button class="btn btn-green" id="classicStartBtn" style="display:none">⚡ 开始游戏</button><button class="btn btn-back" onclick="leaveLobby();showScreen('screenModes')">← 返回模式选择</button></div>
 
-<!-- 象棋模式等待大厅 -->
-<div class="screen lobby" id="screenLobbyChess">
-    <span class="mode-tag">♟️ 象棋模式</span>
-    <h2>⏳ 等待大厅</h2>
-    <p class="room-info">房间号：<strong style="color:#ffd100" id="chessRoomDisp">----</strong> <span id="chessHostTag"></span></p>
-    <div class="map-box" id="chessMapBox"><div class="map-inner" id="chessMapInner"></div><div class="map-label">📍 点击地图设定中心</div></div>
-    <div class="setting-row"><span>🗺️ 活动半径</span><select id="chessRange"><option value="100">100米</option><option value="200">200米</option><option value="300" selected>300米</option><option value="400">400米</option><option value="500">500米</option></select></div>
-    <div class="setting-row"><span>🎲 分配方式</span><select id="chessAssign" onchange="toggleAssignMode('chess')"><option value="random">随机分配</option><option value="free">自由组队</option></select></div>
-    <div class="setting-row"><span>🔒 淘汰后身份</span><select id="chessReveal"><option value="reveal">公开</option><option value="hide">隐藏</option></select></div>
-    <div class="setting-row"><span>⚔️ 低撕高结果</span><select id="chessLowRule"><option value="kill">低等级淘汰</option><option value="freeze">高等级停留30秒</option></select></div>
-    <div id="chessFreePanel" style="display:none;width:100%;max-width:400px"></div>
-    <div id="chessPlayerTags" class="player-tags"></div>
-    <p style="color:#888;font-size:12px">当前 <span id="chessCount">0</span> 人</p>
-    <button class="btn btn-green" id="chessStartBtn" style="display:none">⚡ 开始游戏</button>
-    <button class="btn btn-back" onclick="leaveLobby();showScreen('screenModes')">← 返回模式选择</button>
-</div>
+<div class="screen lobby" id="screenLobbyChess"><span class="mode-tag">♟️ 象棋模式</span><h2>⏳ 等待大厅</h2><p class="room-info">房间号：<strong style="color:#ffd100" id="chessRoomDisp">----</strong> <span id="chessHostTag"></span></p><div class="map-box" id="chessMapBox"><div class="map-inner" id="chessMapInner"></div><div class="map-label">📍 点击地图设定中心</div></div><div class="setting-row"><span>🗺️ 活动半径</span><select id="chessRange"><option value="100">100米</option><option value="200">200米</option><option value="300" selected>300米</option><option value="400">400米</option><option value="500">500米</option></select></div><div class="setting-row"><span>🎲 分配方式</span><select id="chessAssign" onchange="toggleAssignMode('chess')"><option value="random">随机分配</option><option value="free">自由组队</option></select></div><div class="setting-row"><span>🔒 淘汰后身份</span><select id="chessReveal"><option value="reveal">公开</option><option value="hide">隐藏</option></select></div><div class="setting-row"><span>⚔️ 低撕高结果</span><select id="chessLowRule"><option value="kill">低等级淘汰</option><option value="freeze">高等级停留30秒</option></select></div><div id="chessFreePanel" style="display:none;width:100%;max-width:400px"></div><div id="chessPlayerTags" class="player-tags"></div><p style="color:#888;font-size:12px">当前 <span id="chessCount">0</span> 人</p><button class="btn btn-green" id="chessStartBtn" style="display:none">⚡ 开始游戏</button><button class="btn btn-back" onclick="leaveLobby();showScreen('screenModes')">← 返回模式选择</button></div>
 
-<!-- 游戏界面 -->
 <div class="screen" id="screenGame" style="justify-content:flex-start;padding-top:12px">
     <div class="game-header"><h3>🏃 <span id="gameModeTitle">撕名牌</span></h3><span style="font-weight:800">🔑 <span id="gameRoomDisp"></span></span></div>
-    <div class="stat-row">
-        <div class="stat" style="border-color:#00b894"><div class="num" style="color:#00b894" id="aliveNum">0</div><div class="lbl">🟢 存活</div></div>
-        <div class="stat" style="border-color:#f39c12"><div class="num" style="color:#f39c12" id="waitNum">0</div><div class="lbl">🟠 待确认</div></div>
-        <div class="stat" style="border-color:#e17055"><div class="num" style="color:#e17055" id="deadNum">0</div><div class="lbl">💀 淘汰</div></div>
-    </div>
+    <div class="stat-row"><div class="stat" style="border-color:#00b894"><div class="num" style="color:#00b894" id="aliveNum">0</div><div class="lbl">🟢 存活</div></div><div class="stat" style="border-color:#f39c12"><div class="num" style="color:#f39c12" id="waitNum">0</div><div class="lbl">🟠 待确认</div></div><div class="stat" style="border-color:#e17055"><div class="num" style="color:#e17055" id="deadNum">0</div><div class="lbl">💀 淘汰</div></div></div>
     <div class="map-box" id="gameMapBox" style="height:150px"><div class="map-inner" id="gameMapInner"></div><div class="map-label">📍 <span id="rangeStatus" style="color:#00b894">范围内</span></div></div>
     <div class="timer-bar">🎁 道具掉落：<span id="dropCountdown">6:00</span></div>
-    <div class="revive-bar" id="reviveBar" style="display:none">💀 你被淘汰了！使用复活卡？<span id="reviveCountdown"></span> <button class="btn btn-sm btn-orange" onclick="useReviveSelf()">复活自己</button> <button class="btn btn-sm btn-green" onclick="showReviveTeammate()">复活队友</button> <button class="btn btn-sm btn-gray" onclick="declineRevive()">放弃</button></div>
-    <div class="nav">
-        <button class="nav-btn active" id="navMap">🗺️</button><button class="nav-btn inactive" id="navPlayers">👥</button><button class="nav-btn inactive" id="navBag">🎒</button><button class="nav-btn inactive" id="navLog">📜</button>
-    </div>
+    <div class="revive-bar" id="reviveBar" style="display:none">💀 使用复活卡？<span id="reviveCountdown"></span> <button class="btn btn-sm btn-orange" onclick="useReviveSelf()">复活自己</button> <button class="btn btn-sm btn-green" onclick="showReviveTeammate()">复活队友</button> <button class="btn btn-sm btn-gray" onclick="declineRevive()">放弃</button></div>
+    <div class="nav"><button class="nav-btn active" id="navMap">🗺️</button><button class="nav-btn inactive" id="navPlayers">👥</button><button class="nav-btn inactive" id="navBag">🎒</button><button class="nav-btn inactive" id="navLog">📜</button></div>
     <div class="page-panel" id="pageMap"><div id="dropCard" style="display:none;background:#222;border-radius:10px;padding:10px;text-align:center;border:2px solid #ffd100;margin:6px 0"><span id="dropIcon" style="font-size:30px"></span> <span id="dropName" style="font-weight:800;color:#ffd100"></span> <span id="dropDist" style="font-size:12px;color:#4ecdc4"></span> <button class="btn btn-sm btn-gold" onclick="pickupItem()">拾取</button></div></div>
     <div class="page-panel" id="pagePlayers" style="display:none"><div id="playerList"></div></div>
     <div class="page-panel" id="pageBag" style="display:none"><div id="bagArea"></div></div>
     <div class="page-panel" id="pageLog" style="display:none"><div class="log-box" id="logArea" style="max-height:200px"></div></div>
 </div>
 
-<!-- 弹窗 -->
 <div class="modal" id="killModal"><div class="modal-box"><h3>⚠️ 确认撕掉</h3><p id="killName" style="font-size:18px;color:#e17055"></p><button class="btn btn-red" id="btnKill">✅ 确认撕掉</button><button class="btn btn-gray" id="btnCancelKill">❌ 取消</button></div></div>
 <div class="modal" id="confirmModal"><div class="modal-box"><h3>💀 你被撕了！</h3><p id="confirmKiller" style="font-size:18px;color:#e17055"></p><button class="btn btn-orange" id="btnConfirm">😵 确认淘汰</button><button class="btn btn-gray" id="btnDeny">🤚 否认</button></div></div>
 <div class="modal" id="useModal"><div class="modal-box"><h3 id="useTitle"></h3><div id="useBody"></div><button class="btn btn-gray" id="btnCancelUse">取消</button></div></div>
@@ -204,12 +125,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ============ 配置 ============
 const SB_URL='https://mswgibltwekuwkkllkrk.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1zd2dpYmx0d2VrdXdra2xsa3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTQwODUsImV4cCI6MjA5NTk3MDA4NX0.7eraxZGiQqVyIp6ow6R9DsfGPe5lTELcd-bRCL4gFj8';
 const AMAP_KEY='12530b113a60115d9e162efd22d93558';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
-
 let myName='',roomId='',isHost=false,gameMode='classic',currentUser=null;
 let players=[],myItems=[],gameLog=[],channel=null,pollTimer=null,lobbyTimer=null;
 let userPos=null,CENTER={lat:39.909,lng:116.397},RANGE_R=300;
@@ -226,79 +145,86 @@ function closeModal(id){document.getElementById(id).classList.remove('show')}
 function speakLocal(text){if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=1.3;u.pitch=1.3;speechSynthesis.speak(u)}}
 function speakAll(text){speakLocal(text);if(channel)channel.send({type:'broadcast',event:'speak',payload:{text:text}})}
 
-// ============ 登录系统 ============
-function switchAuthMode(){authMode=authMode==='login'?'register':'login';document.getElementById('authTitle').textContent=authMode==='login'?'🔐 登录':'📝 注册';document.getElementById('btnAuth').textContent=authMode==='login'?'登录':'注册';document.querySelector('#authModal .btn-sm').textContent=authMode==='login'?'没有账号？去注册':'已有账号？去登录'}
+// ============ 登录 ============
+function switchAuthMode(){authMode=authMode==='login'?'register':'login';document.getElementById('authTitle').textContent=authMode==='login'?'🔐 登录':'📝 注册';document.getElementById('btnAuth').textContent=authMode==='login'?'登录':'注册'}
 async function handleAuth(){
-    const username=document.getElementById('authUsername').value.trim();
-    const password=document.getElementById('authPassword').value.trim();
+    const username=document.getElementById('authUsername').value.trim(),password=document.getElementById('authPassword').value.trim();
     if(!username||!password)return alert('请输入用户名和密码');
     if(authMode==='register'){
         const{data:exist}=await sb.from('users').select('*').eq('username',username).single();
         if(exist)return alert('❌ 用户名已被占用');
-        const{error}=await sb.from('users').insert({username,password});
-        if(error)return alert('注册失败');
+        const{error}=await sb.from('users').insert({username,password});if(error)return alert('注册失败');
         alert('✅ 注册成功！请登录');switchAuthMode();
     }else{
         const{data:user,error}=await sb.from('users').select('*').eq('username',username).eq('password',password).single();
         if(error||!user)return alert('❌ 用户名或密码错误');
         currentUser=user;myName=username;
-        document.getElementById('userDisplay').textContent='👤 '+username;
-        document.getElementById('btnLoginTop').textContent='退出';
-        document.getElementById('btnLoginTop').onclick=logout;
-        document.getElementById('btnEnter').disabled=false;
-        document.getElementById('btnEnter').classList.remove('btn-disabled');
-        document.getElementById('loginTip').textContent='✅ 已登录：'+username;
-        closeModal('authModal');
+        document.getElementById('userDisplay').textContent='👤 '+username;document.getElementById('btnLoginTop').textContent='退出';document.getElementById('btnLoginTop').onclick=logout;
+        document.getElementById('btnEnter').disabled=false;document.getElementById('btnEnter').classList.remove('btn-disabled');document.getElementById('loginTip').textContent='✅ 已登录：'+username;closeModal('authModal');
     }
 }
 function logout(){currentUser=null;myName='';document.getElementById('userDisplay').textContent='未登录';document.getElementById('btnLoginTop').textContent='登录/注册';document.getElementById('btnLoginTop').onclick=()=>showModal('authModal');document.getElementById('btnEnter').disabled=true;document.getElementById('btnEnter').classList.add('btn-disabled');document.getElementById('loginTip').textContent='⚠️ 请先登录'}
 
-// ============ 游戏规则 ============
-function showRules(){
-    document.getElementById('rulesContent').innerHTML=`
-        <p style="color:#ffd100;font-weight:700;margin-top:8px">🏆 经典模式</p>
-        <p style="color:#aaa;font-size:13px">• 可选无阵营或红蓝两队<br>• 最后存活者/对方全灭获胜<br>• 淘汰需双方确认<br>• 道具：定位卡、复活卡、雷达卡、双命卡、反弹卡</p>
-        <p style="color:#ffd100;font-weight:700;margin-top:8px">♟️ 象棋模式</p>
-        <p style="color:#aaa;font-size:13px">• 红蓝两队，每人随机象棋身份<br>• 等级：帅/将 > 象/相 > 车 > 炮 > 卒/兵<br>• 高等级撕低等级有效；低撕高则自己淘汰<br>• 同级相撕两人同时淘汰<br>• 兵/卒可越级撕帅/将<br>• 侦查卡：全员可见目标身份<br>• 网页自动判定，无需确认</p>
-        <p style="color:#ffd100;font-weight:700;margin-top:8px">🎒 道具说明</p>
-        <p style="color:#aaa;font-size:13px">📍定位卡-显示目标位置5分钟<br>🔄复活卡-复活一名淘汰玩家<br>🔮雷达卡-显示所有存活玩家1分钟<br>🔎侦查卡-显示目标身份（象棋）<br>💚双命卡-生命+1或被撕自动消耗<br>🛡️反弹卡-被撕时反杀对方</p>
-    `;
-    showModal('rulesModal');
-}
+// ============ 规则 ============
+function showRules(){document.getElementById('rulesContent').innerHTML=`<p style="color:#ffd100;font-weight:700;margin-top:8px">🏆 经典模式</p><p style="color:#aaa;font-size:13px">• 可选无阵营或红蓝两队<br>• 最后存活者/对方全灭获胜<br>• 淘汰需双方确认</p><p style="color:#ffd100;font-weight:700;margin-top:8px">♟️ 象棋模式</p><p style="color:#aaa;font-size:13px">• 红蓝两队，随机象棋身份<br>• 等级：帅/将 > 象/相 > 车 > 炮 > 卒/兵<br>• 高撕低有效；低撕高自己淘汰<br>• 同级双淘汰；兵/卒可撕帅/将<br>• 网页自动判定</p><p style="color:#ffd100;font-weight:700;margin-top:8px">🎒 道具</p><p style="color:#aaa;font-size:13px">📍定位卡 🔄复活卡 🔮雷达卡 🔎侦查卡 💚双命卡 🛡️反弹卡</p>`;showModal('rulesModal')}
 
-// ============ Supabase实时 ============
+// ============ 实时 ============
 function subscribeChannel(){channel=sb.channel('room-'+roomId);channel.on('broadcast',{event:'speak'},p=>{if(p.payload.text)speakLocal(p.payload.text)});channel.on('broadcast',{event:'game'},p=>{if(p.payload.type==='game_start'){clearInterval(lobbyTimer);loadPlayers().then(()=>startGameScreen())}});channel.subscribe()}
 
 // ============ 创建房间 ============
-function createRoom(mode){gameMode=mode;roomId=Math.floor(1000+Math.random()*9000).toString();isHost=true;myName=currentUser.username;const lobbyId=mode==='chess'?'screenLobbyChess':'screenLobbyClassic';document.getElementById(mode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;document.getElementById(mode==='chess'?'chessHostTag':'classicHostTag').textContent='(房主👑)';document.getElementById(mode==='chess'?'chessStartBtn':'classicStartBtn').style.display='block';showScreen(lobbyId);initLobbyMap(mode);sb.from('rooms').upsert({id:roomId,status:'waiting',host:myName,mode:gameMode,created_at:new Date().toISOString()}).then(()=>{sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'}).then(()=>{subscribeChannel();refreshLobby(mode);lobbyTimer=setInterval(()=>refreshLobby(mode),2000)})})}
+async function createRoom(mode){
+    gameMode=mode;roomId=Math.floor(1000+Math.random()*9000).toString();isHost=true;myName=currentUser.username;
+    const lobbyId=mode==='chess'?'screenLobbyChess':'screenLobbyClassic';
+    document.getElementById(mode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;
+    document.getElementById(mode==='chess'?'chessHostTag':'classicHostTag').textContent='(房主👑)';
+    document.getElementById(mode==='chess'?'chessStartBtn':'classicStartBtn').style.display='block';
+    showScreen(lobbyId);initLobbyMap(mode);
+    await sb.from('rooms').upsert({id:roomId,status:'waiting',host:myName,mode:gameMode,created_at:new Date().toISOString()});
+    await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'});
+    subscribeChannel();refreshLobby(mode);lobbyTimer=setInterval(()=>refreshLobby(mode),2000);
+}
 
 // ============ 加入房间 ============
-function joinRoom(){myName=currentUser.username;roomId=document.getElementById('joinRoomInput').value.trim();if(!roomId||roomId.length!==4||isNaN(roomId))return alert('请输入4位房间号');sb.from('rooms').select('*').eq('id',roomId).single().then(({data:room})=>{if(!room)return alert('房间不存在');gameMode=room.mode||'classic';isHost=false;sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'}).then(()=>{subscribeChannel();const lobbyId=gameMode==='chess'?'screenLobbyChess':'screenLobbyClassic';document.getElementById(gameMode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;document.getElementById(gameMode==='chess'?'chessStartBtn':'classicStartBtn').style.display='none';showScreen(lobbyId);if(gameMode==='chess'){document.getElementById('chessAssign').value='random';toggleAssignMode('chess')}refreshLobby(gameMode);lobbyTimer=setInterval(()=>refreshLobby(gameMode),2000)})})}
+async function joinRoom(){
+    myName=currentUser.username;roomId=document.getElementById('joinRoomInput').value.trim();
+    if(!roomId||roomId.length!==4||isNaN(roomId))return alert('请输入4位房间号');
+    const{data:room}=await sb.from('rooms').select('*').eq('id',roomId).single();
+    if(!room)return alert('房间不存在');gameMode=room.mode||'classic';isHost=false;
+    await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'});
+    subscribeChannel();const lobbyId=gameMode==='chess'?'screenLobbyChess':'screenLobbyClassic';
+    document.getElementById(gameMode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;
+    showScreen(lobbyId);refreshLobby(gameMode);lobbyTimer=setInterval(()=>refreshLobby(gameMode),2000);
+}
 
-// ============ 等待大厅刷新 ============
-function refreshLobby(mode){sb.from('players').select('*').eq('room_id',roomId).then(({data})=>{if(!data)return;const prefix=mode==='chess'?'chess':'classic';document.getElementById(prefix+'Count').textContent=data.length;const tagsEl=document.getElementById(prefix+'PlayerTags');if(tagsEl)tagsEl.innerHTML=data.map(p=>`<span class="player-tag${p.team==='red'?' red':p.team==='blue'?' blue':''}">${p.name}${p.name===myName&&isHost?' 👑':''}</span>`).join(' ');if(isHost&&document.getElementById(prefix+'Assign')&&document.getElementById(prefix+'Assign').value==='free')renderFreePanel(mode,data);const{data:room}=sb.from('rooms').select('*').eq('id',roomId).single();if(room&&room.status==='playing'){clearInterval(lobbyTimer);loadPlayers().then(()=>startGameScreen())}})}
-
-// ============ 自由组队面板 ============
+// ============ 刷新大厅 ============
+async function refreshLobby(mode){
+    const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(!data)return;
+    const prefix=mode==='chess'?'chess':'classic';
+    document.getElementById(prefix+'Count').textContent=data.length;
+    const tagsEl=document.getElementById(prefix+'PlayerTags');if(tagsEl)tagsEl.innerHTML=data.map(p=>`<span class="player-tag${p.team==='red'?' red':p.team==='blue'?' blue':''}">${p.name}${p.name===myName&&isHost?' 👑':''}</span>`).join(' ');
+    if(isHost&&document.getElementById(prefix+'Assign')&&document.getElementById(prefix+'Assign').value==='free')renderFreePanel(mode,data);
+    const{data:room}=await sb.from('rooms').select('*').eq('id',roomId).single();if(room&&room.status==='playing'){clearInterval(lobbyTimer);await loadPlayers();startGameScreen()}
+}
 function renderFreePanel(mode,data){const prefix=mode==='chess'?'chess':'classic';const panel=document.getElementById(prefix+'FreePanel');if(!panel)return;const reds=data.filter(p=>p.team==='red'),blues=data.filter(p=>p.team==='blue'),un=data.filter(p=>!p.team);panel.style.display='block';panel.innerHTML=`<div class="team-panel"><div class="team-box red"><h3>🔴 红队 (${reds.length})</h3>${reds.map(p=>`<span class="member">${p.name}</span>`).join('')}</div><div class="team-box blue"><h3>🔵 蓝队 (${blues.length})</h3>${blues.map(p=>`<span class="member">${p.name}</span>`).join('')}</div></div><div class="unassigned">未选择：${un.map(p=>`<span onclick="pickTeam('${p.name}','red','${mode}')">🔴</span><span onclick="pickTeam('${p.name}','blue','${mode}')">🔵</span> ${p.name}`).join(' ')}</div>`}
-function pickTeam(name,team,mode){sb.from('players').update({team}).eq('room_id',roomId).eq('name',name).then(()=>refreshLobby(mode))}
+async function pickTeam(name,team,mode){await sb.from('players').update({team}).eq('room_id',roomId).eq('name',name);refreshLobby(mode)}
 function toggleTeamOptions(mode){const sel=document.getElementById(mode+'Team');const row=document.getElementById(mode+'AssignRow');if(sel&&row)row.style.display=sel.value==='teams'?'flex':'none'}
 function toggleAssignMode(mode){const sel=document.getElementById(mode+'Assign');const panel=document.getElementById(mode+'FreePanel');if(sel&&panel){if(sel.value==='free'){panel.style.display='block';sb.from('players').select('*').eq('room_id',roomId).then(({data})=>{if(data)renderFreePanel(mode,data)})}else{panel.style.display='none'}}}
 
 // ============ 开始游戏 ============
-async function startGame(mode){const prefix=mode==='chess'?'chess':'classic';RANGE_R=parseInt(document.getElementById(prefix+'Range').value);const assignEl=mode==='chess'?document.getElementById('chessAssign'):(document.getElementById('classicTeam').value==='teams'?document.getElementById('classicAssign'):null);if(assignEl&&assignEl.value==='random'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){data.forEach((p,i)=>{sb.from('players').update({team:i%2===0?'red':'blue'}).eq('room_id',roomId).eq('name',p.name)})}}if(mode==='chess'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){const shuffled=[...CHESS_RANKS].sort(()=>Math.random()-.5);data.forEach((p,i)=>{const role=shuffled[i%shuffled.length];sb.from('players').update({chess_role:role}).eq('room_id',roomId).eq('name',p.name)})}}await sb.from('rooms').update({status:'playing',range_r:RANGE_R,center_lat:CENTER.lat,center_lng:CENTER.lng}).eq('id',roomId);clearInterval(lobbyTimer);await loadPlayers();startGameScreen();if(channel)channel.send({type:'broadcast',event:'game',payload:{type:'game_start'}})}
+async function startGame(mode){const prefix=mode==='chess'?'chess':'classic';RANGE_R=parseInt(document.getElementById(prefix+'Range').value);const assignEl=mode==='chess'?document.getElementById('chessAssign'):(document.getElementById('classicTeam').value==='teams'?document.getElementById('classicAssign'):null);if(assignEl&&assignEl.value==='random'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data)data.forEach((p,i)=>{sb.from('players').update({team:i%2===0?'red':'blue'}).eq('room_id',roomId).eq('name',p.name)})}if(mode==='chess'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){const shuffled=[...CHESS_RANKS].sort(()=>Math.random()-.5);data.forEach((p,i)=>{sb.from('players').update({chess_role:shuffled[i%shuffled.length]}).eq('room_id',roomId).eq('name',p.name)})}}await sb.from('rooms').update({status:'playing',range_r:RANGE_R,center_lat:CENTER.lat,center_lng:CENTER.lng}).eq('id',roomId);clearInterval(lobbyTimer);await loadPlayers();startGameScreen();if(channel)channel.send({type:'broadcast',event:'game',payload:{type:'game_start'}})}
 function startGameScreen(){showScreen('screenGame');document.getElementById('gameRoomDisp').textContent=roomId;document.getElementById('gameModeTitle').textContent=gameMode==='chess'?'象棋模式':'经典模式';myItems=[];gameLog=[];addLog('🎮 游戏开始！');speakAll('游戏开始！');initGameMap();spawnDropItem();startDropTimer();startPolling();renderAll();document.getElementById('navMap').click()}
 
 // ============ 地图 ============
 function initLobbyMap(mode){setTimeout(()=>{if(typeof AMap==='undefined')return;const cid=mode==='chess'?'chessMapInner':'classicMapInner';lobbyMap=new AMap.Map(cid,{zoom:16});getUserPosForLobby();lobbyMap.on('click',e=>{if(!isHost)return;CENTER={lat:e.lnglat.lat,lng:e.lnglat.lng};lobbyMap.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(lobbyMap);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(lobbyMap)})},500)}
 function initGameMap(){setTimeout(()=>{if(typeof AMap==='undefined')return;gameMap=new AMap.Map('gameMapInner',{zoom:16,center:[CENTER.lng,CENTER.lat]});rangeCircle=new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]});rangeCircle.setMap(gameMap);userMarker=new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#0984e3;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">⚡ 我</div>',offset:new AMap.Pixel(-15,-15)});userMarker.setMap(gameMap)},500)}
-function getUserPosForLobby(){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{CENTER={lat:p.coords.latitude,lng:p.coords.longitude};if(lobbyMap){lobbyMap.setCenter([CENTER.lng,CENTER.lat]);lobbyMap.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(lobbyMap);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(lobbyMap)}},()=>{},{enableHighAccuracy:true,timeout:10000})}}
-function getUserPosGame(){if(navigator.geolocation){navigator.geolocation.watchPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};if(gameMap&&userMarker)userMarker.setPosition([userPos.lng,userPos.lat]);checkDropDist()},()=>{},{enableHighAccuracy:true})}}
-function dist(a,b){const R=6371000;const dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)))}
+function getUserPosForLobby(){if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>{CENTER={lat:p.coords.latitude,lng:p.coords.longitude};if(lobbyMap){lobbyMap.setCenter([CENTER.lng,CENTER.lat]);lobbyMap.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(lobbyMap);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(lobbyMap)}},()=>{},{enableHighAccuracy:true,timeout:10000})}
+function getUserPosGame(){if(navigator.geolocation)navigator.geolocation.watchPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};if(gameMap&&userMarker)userMarker.setPosition([userPos.lng,userPos.lat]);checkDropDist()},()=>{},{enableHighAccuracy:true})}
+function dist(a,b){const R=6371000;const dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;return Math.round(R*2*Math.atan2(Math.sqrt(Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2),Math.sqrt(1-Math.sin(dLat/2)**2-Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2)))}
 
-// ============ 道具系统 ============
+// ============ 道具 ============
 function spawnDropItem(){const item=itemPool[Math.floor(Math.random()*itemPool.length)],rlat=CENTER.lat+(Math.random()-.5)*.003,rlng=CENTER.lng+(Math.random()-.5)*.003;currentDrop={...item,lat:rlat,lng:rlng};document.getElementById('dropCard').style.display='block';document.getElementById('dropIcon').textContent=item.icon;document.getElementById('dropName').textContent=item.name;if(dropMarker&&gameMap)dropMarker.setMap(null);if(gameMap){dropMarker=new AMap.Marker({position:[rlng,rlat],content:'<div style="background:#ffd100;color:#333;padding:4px 10px;border-radius:14px;font-size:12px;font-weight:700">'+item.icon+'</div>',offset:new AMap.Pixel(-15,-15)});dropMarker.setMap(gameMap)}speakAll('道具已刷新！')}
 function checkDropDist(){if(!currentDrop||!userPos)return;const d=dist(userPos,currentDrop);if(d<=25){document.getElementById('dropCard').style.display='block';document.getElementById('dropDist').textContent='📏 '+d+' 米 ✅'}else{document.getElementById('dropDist').textContent='📏 '+d+' 米'}}
-function pickupItem(){if(!currentDrop)return;const d=userPos?dist(userPos,currentDrop):999;if(d>25)return alert('❌ 距离太远！');myItems.push({name:currentDrop.name,icon:currentDrop.icon,type:currentDrop.type});addLog('🎁 '+myName+' 拾取了 '+currentDrop.name);speakAll(myName+'拾取了'+currentDrop.name);currentDrop=null;document.getElementById('dropCard').style.display='none';if(dropMarker&&gameMap){dropMarker.setMap(null);dropMarker=null}saveItems();renderAll()}
+function pickupItem(){if(!currentDrop)return;const d=userPos?dist(userPos,currentDrop):999;if(d>25)return alert('❌ 距离太远！');myItems.push({name:currentDrop.name,icon:currentDrop.icon,type:currentDrop.type});addLog('🎁 '+myName+' 拾取了 '+currentDrop.name);speakAll(myName+'拾取了'+currentDrop.name);currentDrop=null;document.getElementById('dropCard').style.display='none';if(dropMarker){dropMarker.setMap(null);dropMarker=null}saveItems();renderAll()}
 function startDropTimer(){dropSec=360;updateDropDisplay();dropTimer=setInterval(()=>{dropSec--;updateDropDisplay();if(dropSec<=0){spawnDropItem();dropSec=360}},1000)}
 function updateDropDisplay(){const m=Math.floor(dropSec/60),s=dropSec%60;document.getElementById('dropCountdown').textContent=m+':'+String(s).padStart(2,'0')}
 
@@ -307,32 +233,32 @@ async function loadPlayers(){const{data}=await sb.from('players').select('*').eq
 function startPolling(){pollTimer=setInterval(async()=>{await loadPlayers();renderAll();checkEnd()},2000)}
 
 // ============ 象棋判定 ============
-async function handleChessKill(attacker,target){const a=players.find(p=>p.name===attacker),t=players.find(p=>p.name===target);if(!a||!t)return;const al=CHESS_LEVEL[a.chess_role]||0,tl=CHESS_LEVEL[t.chess_role]||0;let result='';if(a.chess_role==='兵'||a.chess_role==='卒'){if(t.chess_role==='帅'||t.chess_role==='将')result='kill_target'}else if(al>tl)result='kill_target';else if(al<tl){const rule=document.getElementById('chessLowRule')?document.getElementById('chessLowRule').value:'kill';result=rule==='freeze'?'freeze':'kill_attacker'}else result='both';
-if(result==='kill_target'){t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',target);addLog('💀 '+attacker+' 撕了 '+target);speakAll(attacker+'淘汰了'+target)}
+async function handleChessKill(attacker,target){const a=players.find(p=>p.name===attacker),t=players.find(p=>p.name===target);if(!a||!t)return;const al=CHESS_LEVEL[a.chess_role]||0,tl=CHESS_LEVEL[t.chess_role]||0;let result='';if(a.chess_role==='兵'||a.chess_role==='卒'){if(t.chess_role==='帅'||t.chess_role==='将')result='kill_target'}else if(al>tl)result='kill_target';else if(al<tl){result=document.getElementById('chessLowRule').value==='freeze'?'freeze':'kill_attacker'}else result='both';
+if(result==='kill_target'){t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',target);addLog('💀 '+attacker+' 淘汰 '+target);speakAll(attacker+'淘汰了'+target)}
 else if(result==='kill_attacker'){a.alive=false;a.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',attacker);addLog('💀 '+attacker+' 逆撕失败');speakAll(attacker+'逆撕失败！')}
-else if(result==='both'){a.alive=false;a.hearts=0;t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',attacker);await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',target);addLog('💀 同归于尽');speakAll('同归于尽！')}
+else if(result==='both'){a.alive=false;a.hearts=0;t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0}).eq('room_id',roomId).eq('name',attacker);await sb.from('players').update({alive:false,hearts:0}).eq('room_id',roomId).eq('name',target);addLog('💀 同归于尽');speakAll('同归于尽！')}
 else if(result==='freeze'){addLog('❄️ '+target+' 被冻结30秒');speakAll(target+'被冻结30秒')}renderAll();checkEnd()}
 
 // ============ 淘汰 ============
 let killTarget='';
 function clickP(name){if(name===myName)return;const me=players.find(p=>p.name===myName);if(!me||!me.alive)return;const p=players.find(p=>p.name===name);if(!p||!p.alive||p.waitingKill)return;if(gameMode==='chess'){if(me.team===p.team)return alert('不能撕队友！');handleChessKill(myName,name);return}killTarget=name;document.getElementById('killName').textContent=name;showModal('killModal')}
-async function doKill(){if(!killTarget)return;const p=players.find(p=>p.name===killTarget);if(!p)return;if(p.hearts>1){p.hearts--;await sb.from('players').update({hearts:p.hearts}).eq('room_id',roomId).eq('name',killTarget);addLog('💚 '+killTarget+' 消耗一心，剩'+p.hearts);speakAll(killTarget+'失去一颗心！')}else{const hasRebound=p.items&&JSON.parse(p.items||'[]').find(i=>i.type==='rebound');if(hasRebound){addLog('🛡️ '+killTarget+' 反弹！');speakAll(killTarget+'反弹！')}else{p.waitingKill=myName;await sb.from('players').update({waiting_kill:myName}).eq('room_id',roomId).eq('name',killTarget);addLog('⚡ '+myName+' 发起淘汰 '+killTarget)}}closeModal('killModal');killTarget='';await loadPlayers();renderAll()}
+async function doKill(){if(!killTarget)return;const p=players.find(p=>p.name===killTarget);if(!p)return;if(p.hearts>1){p.hearts--;await sb.from('players').update({hearts:p.hearts}).eq('room_id',roomId).eq('name',killTarget);addLog('💚 '+killTarget+' 消耗一心剩'+p.hearts);speakAll(killTarget+'失去一颗心！')}else{p.waitingKill=myName;await sb.from('players').update({waiting_kill:myName}).eq('room_id',roomId).eq('name',killTarget);addLog('⚡ '+myName+' 发起淘汰 '+killTarget)}closeModal('killModal');killTarget='';await loadPlayers();renderAll()}
 async function confirmKilled(){const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;const kn=me.waitingKill;me.alive=false;me.waitingKill=null;await sb.from('players').update({alive:false,waiting_kill:null}).eq('room_id',roomId).eq('name',myName);addLog('💀 '+kn+' 淘汰了 '+myName);speakAll(kn+'淘汰了'+myName);closeModal('confirmModal');checkRevive();const rwd=itemPool[Math.floor(Math.random()*6)];myItems.push(rwd);addLog('🏆 奖励：'+rwd.name);saveItems();await loadPlayers();renderAll();checkEnd()}
 async function denyKill(){const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;me.waitingKill=null;await sb.from('players').update({waiting_kill:null}).eq('room_id',roomId).eq('name',myName);addLog('🤚 '+myName+' 否认被撕');closeModal('confirmModal');await loadPlayers();renderAll()}
 
 // ============ 复活 ============
 function checkRevive(){const me=players.find(p=>p.name===myName);if(!me||me.alive)return;const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;reviveSec=180;document.getElementById('reviveBar').style.display='block';updateReviveCountdown();reviveTimer=setInterval(()=>{reviveSec--;updateReviveCountdown();if(reviveSec<=0)declineRevive()},1000)}
-function updateReviveCountdown(){const m=Math.floor(reviveSec/60),s=reviveSec%60;document.getElementById('reviveCountdown').textContent=m+':'+String(s).padStart(2,'0')}
+function updateReviveCountdown(){document.getElementById('reviveCountdown').textContent=Math.floor(reviveSec/60)+':'+String(reviveSec%60).padStart(2,'0')}
 function useReviveSelf(){const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;const me=players.find(p=>p.name===myName);if(!me)return;me.alive=true;me.hearts=1;sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',myName);myItems.splice(idx,1);saveItems();clearReviveBar();addLog('🔄 '+myName+' 复活了自己');speakAll(myName+'复活了！');loadPlayers();renderAll()}
 function showReviveTeammate(){showModal('reviveModal');const deads=players.filter(p=>!p.alive&&p.name!==myName);document.getElementById('reviveTargets').innerHTML=deads.length?deads.map(p=>`<button class="btn btn-sm btn-green" onclick="reviveTeammate('${p.name}')" style="margin:3px">🔄 ${p.name}</button>`).join(''):'<p style="color:#888">无淘汰队友</p>'}
 async function reviveTeammate(name){const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);myItems.splice(idx,1);saveItems();closeModal('reviveModal');clearReviveBar();addLog('🔄 '+myName+' 复活了 '+name);speakAll(name+'复活了！');loadPlayers();renderAll()}
 function declineRevive(){clearReviveBar()}function clearReviveBar(){clearInterval(reviveTimer);document.getElementById('reviveBar').style.display='none';reviveSec=180}
 
 // ============ 道具使用 ============
-function useItem(idx){const item=myItems[idx];if(item.type==='track'){const tg=players.filter(p=>p.alive&&p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='📍 定位卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doTrack('${p.name}',${idx})">📍 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='revive'){const tg=players.filter(p=>!p.alive);if(!tg.length)return alert('无人可复活');document.getElementById('useTitle').textContent='🔄 复活卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-green" onclick="doRevive('${p.name}',${idx})">🔄 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='radar'){const alv=players.filter(p=>p.alive);document.getElementById('useTitle').textContent='🔮 雷达卡';document.getElementById('useBody').innerHTML='<p style="color:#00b894;font-weight:700">📡 存活：'+alv.map(p=>p.name).join('、')+'</p>';showModal('useModal');myItems.splice(idx,1);saveItems();addLog('🔮 使用雷达卡');speakAll('雷达扫描完成');setTimeout(()=>{closeModal('useModal');renderAll()},2000)}else if(item.type==='scout'){const tg=players.filter(p=>p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='🔎 侦查卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doScout('${p.name}',${idx})">🔎 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='double'){const me=players.find(p=>p.name===myName);if(!me)return;me.hearts=(me.hearts||1)+1;sb.from('players').update({hearts:me.hearts}).eq('room_id',roomId).eq('name',myName);myItems.splice(idx,1);saveItems();addLog('💚 '+myName+' 使用双命卡');speakAll(myName+'生命+1！');renderAll()}else if(item.type==='rebound'){addLog('🛡️ 反弹卡已装备');alert('🛡️ 反弹卡已自动装备')}}
-async function doTrack(name,idx){addLog('📍 '+myName+' 定位 '+name);alert('📍 '+name+' 的位置已显示（5分钟）');myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
+function useItem(idx){const item=myItems[idx];if(item.type==='track'){const tg=players.filter(p=>p.alive&&p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='📍 定位卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doTrack('${p.name}',${idx})">📍 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='revive'){const tg=players.filter(p=>!p.alive);if(!tg.length)return alert('无人可复活');document.getElementById('useTitle').textContent='🔄 复活卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-green" onclick="doRevive('${p.name}',${idx})">🔄 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='radar'){const alv=players.filter(p=>p.alive);document.getElementById('useTitle').textContent='🔮 雷达卡';document.getElementById('useBody').innerHTML='<p style="color:#00b894;font-weight:700">📡 存活：'+alv.map(p=>p.name).join('、')+'</p>';showModal('useModal');myItems.splice(idx,1);saveItems();addLog('🔮 使用雷达卡');speakAll('雷达扫描完成');setTimeout(()=>{closeModal('useModal');renderAll()},2000)}else if(item.type==='scout'){const tg=players.filter(p=>p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='🔎 侦查卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doScout('${p.name}',${idx})">🔎 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='double'){const me=players.find(p=>p.name===myName);if(!me)return;me.hearts=(me.hearts||1)+1;sb.from('players').update({hearts:me.hearts}).eq('room_id',roomId).eq('name',myName);myItems.splice(idx,1);saveItems();addLog('💚 '+myName+' 使用双命卡');speakAll(myName+'生命+1！');renderAll()}else if(item.type==='rebound'){alert('🛡️ 反弹卡已自动装备')}}
+async function doTrack(name,idx){addLog('📍 '+myName+' 定位 '+name);alert('📍 '+name+' 已定位');myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 async function doRevive(name,idx){await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);addLog('🔄 '+myName+' 复活了 '+name);speakAll(name+'复活了！');myItems.splice(idx,1);saveItems();closeModal('useModal');loadPlayers();renderAll()}
-async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)return;const info=gameMode==='chess'?'身份：'+(p.chess_role||'未知'):'队伍：'+(p.team||'无');addLog('🔎 '+myName+' 侦查 '+name+' - '+info);speakAll(name+' - '+info);alert('🔎 '+name+'：'+info);myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
+async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)return;const info=gameMode==='chess'?'身份：'+(p.chess_role||'未知'):'队伍：'+(p.team||'无');addLog('🔎 '+name+' - '+info);speakAll(name+' - '+info);alert('🔎 '+name+'：'+info);myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 
 // ============ 渲染 ============
 function renderAll(){const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);document.getElementById('aliveNum').textContent=alv.length;document.getElementById('waitNum').textContent=wait.length;document.getElementById('deadNum').textContent=ded.length;document.getElementById('playerList').innerHTML=players.map(p=>{let cls='live';if(!p.alive)cls='ded';if(p.waitingKill)cls='wait';return `<div class="prow ${cls}" onclick="${p.alive&&!p.waitingKill&&p.name!==myName?"clickP('"+p.name+"')":''}"><span>${!p.alive?'💀':p.waitingKill?'🟠':'🟢'} ${p.name}${p.name===myName?' (你)':''}${gameMode==='chess'&&p.chess_role?' ['+p.chess_role+']':''}${p.team?(' '+(p.team==='red'?'🔴':'🔵')):''}</span><span class="hearts">${'❤️'.repeat(p.hearts||0)||'🖤'}</span></div>`}).join('');document.getElementById('bagArea').innerHTML=myItems.length?myItems.map((it,i)=>`<button class="btn btn-gold" style="display:inline-block;margin:3px;padding:8px 14px;font-size:12px;width:auto" onclick="useItem(${i})">${it.icon} ${it.name}</button>`).join(''):'<div style="color:#888;text-align:center;padding:20px">🎒 背包空空如也</div>';document.getElementById('logArea').innerHTML=gameLog.slice(-15).reverse().map(l=>`<div style="padding:2px 0;border-bottom:1px solid #222"><span style="color:#555;font-size:10px">${l.time}</span> ${l.msg}</div>`).join('')}
@@ -342,6 +268,9 @@ function checkEnd(){const alv=players.filter(p=>p.alive);if(alv.length<=1&&playe
 async function leaveLobby(){if(channel){channel.unsubscribe();channel=null}clearInterval(lobbyTimer);await sb.from('players').delete().eq('room_id',roomId).eq('name',myName)}
 
 // ============ 按钮绑定 ============
+document.getElementById('btnLoginTop').addEventListener('click',()=>showModal('authModal'));
+document.getElementById('btnAuth').addEventListener('click',handleAuth);
+document.getElementById('btnEnter').addEventListener('click',()=>showModal('mainMenuModal'));
 document.getElementById('btnKill').addEventListener('click',doKill);
 document.getElementById('btnCancelKill').addEventListener('click',()=>closeModal('killModal'));
 document.getElementById('btnConfirm').addEventListener('click',confirmKilled);
@@ -353,7 +282,6 @@ document.getElementById('navBag').addEventListener('click',()=>{document.querySe
 document.getElementById('navLog').addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('navLog').classList.add('active');document.getElementById('pageMap').style.display='none';document.getElementById('pagePlayers').style.display='none';document.getElementById('pageBag').style.display='none';document.getElementById('pageLog').style.display='block'});
 document.getElementById('classicStartBtn').addEventListener('click',()=>startGame('classic'));
 document.getElementById('chessStartBtn').addEventListener('click',()=>startGame('chess'));
-document.getElementById('btnLoginTop').addEventListener('click',()=>showModal('authModal'));
 
 const s=document.createElement('script');s.src='https://webapi.amap.com/maps?v=2.0&key='+AMAP_KEY;document.head.appendChild(s);
 s.onload=function(){getUserPosForLobby();getUserPosGame()};
