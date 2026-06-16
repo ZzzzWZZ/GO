@@ -6,371 +6,299 @@
     <title>🏃 撕名牌大作战</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(180deg,#fff7e6 0%,#fffbf0 40%,#e8f4fd 100%);color:#2d3436;min-height:100vh}
-        .container{max-width:500px;margin:0 auto;padding:12px}
-        .topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(135deg,#ffd100,#ffb800);border-radius:16px;margin-bottom:10px;box-shadow:0 4px 16px rgba(255,184,0,.3)}
-        .topbar h1{font-size:20px;color:#2d3436}
-        .topbar .badge{background:#fff;color:#e17055;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:800}
-        .stat-row{display:flex;gap:10px;margin:10px 0}
-        .stat-box{flex:1;padding:14px 10px;border-radius:16px;text-align:center;font-weight:800;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.06)}
-        .stat-alive{border:2.5px solid #00b894}.stat-alive .big{color:#00b894;font-size:28px}.stat-alive .sm{color:#00b894;font-size:11px}
-        .stat-dead{border:2.5px solid #e17055}.stat-dead .big{color:#e17055;font-size:28px}.stat-dead .sm{color:#e17055;font-size:11px}
-        .stat-wait{border:2.5px solid #f39c12}.stat-wait .big{color:#f39c12;font-size:28px}.stat-wait .sm{color:#f39c12;font-size:11px}
-        .name-row{font-size:12px;line-height:1.8;margin:6px 0;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-        .name-row .alive-c{color:#00b894;font-weight:700}.name-row .dead-c{color:#e17055}.name-row .wait-c{color:#f39c12;font-weight:600}
-        .tabs{display:flex;gap:6px;margin:10px 0 0}
-        .tab-btn{flex:1;text-align:center;padding:14px 8px;font-size:14px;font-weight:800;cursor:pointer;border-radius:14px 14px 0 0;transition:all .25s;border:none}
-        .tab-btn.active{background:#fff;color:#e17055;box-shadow:0 -4px 12px rgba(0,0,0,.06)}
-        .tab-btn.inactive{background:#f0f0f0;color:#aaa}
-        .page{background:#fff;border-radius:0 0 16px 16px;padding:14px;min-height:300px;box-shadow:0 6px 20px rgba(0,0,0,.05)}
-        #mapContainer{width:100%;height:260px;border-radius:14px;overflow:hidden;border:2.5px solid #dfe6e9;position:relative}
-        #amapContainer{width:100%;height:100%}
-        .map-label{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);color:#2d3436;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.1);pointer-events:none}
-        .drop-card{background:linear-gradient(135deg,#fffbf0,#fff7d6);border-radius:16px;padding:16px;text-align:center;border:3px solid #ffd100;margin:10px 0;display:none;box-shadow:0 6px 24px rgba(255,209,0,.3)}
-        .drop-card.show{display:block}.drop-card .icon{font-size:44px}.drop-card .title{font-size:18px;font-weight:900;color:#e17055;margin:4px 0}.drop-card .dist{font-size:13px;color:#0984e3;font-weight:700}
-        .timer-card{background:#fff;border-radius:14px;padding:12px;text-align:center;border:2.5px solid #ffeaa7;margin:10px 0;box-shadow:0 4px 14px rgba(255,234,167,.5)}
-        .timer-card .time{font-size:34px;font-weight:900;color:#e17055;letter-spacing:2px}.timer-card .lbl{font-size:12px;color:#636e72;font-weight:600}
-        .btn{padding:14px 22px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;margin:3px}
-        .btn:active{transform:scale(.94)}
-        .btn-gold{background:linear-gradient(135deg,#ffd100,#ffb800);color:#2d3436;width:100%;box-shadow:0 6px 18px rgba(255,184,0,.35)}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0d0d0d;color:#fff;min-height:100vh;overflow-x:hidden}
+        .screen{min-height:100vh;display:none;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:20px}
+        .screen.active{display:flex}
+        .cover{background:linear-gradient(180deg,#1a1a2e,#0d0d0d);position:relative}
+        .particle{position:absolute;width:4px;height:4px;background:#ffd100;border-radius:50%;animation:float 3s infinite;opacity:.6}
+        .particle:nth-child(1){top:20%;left:10%;animation-delay:0s}
+        .particle:nth-child(2){top:60%;right:15%;animation-delay:1s}
+        .particle:nth-child(3){top:30%;right:25%;animation-delay:2s}
+        .particle:nth-child(4){bottom:30%;left:20%;animation-delay:.5s}
+        .particle:nth-child(5){top:50%;left:50%;animation-delay:1.5s}
+        @keyframes float{0%,100%{transform:translateY(0)scale(1)}50%{transform:translateY(-30px)scale(1.5);opacity:1}}
+        .logo{font-size:80px;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+        h1{font-size:36px;font-weight:900;background:linear-gradient(135deg,#ffd100,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:12px 0}
+        .subtitle{color:#888;font-size:14px;margin-bottom:30px}
+        .btn{display:inline-block;padding:14px 28px;border-radius:30px;font-size:16px;font-weight:900;border:none;cursor:pointer;letter-spacing:1px;transition:.2s;margin:3px}
+        .btn:active{transform:scale(.95)}
+        .btn-gold{background:linear-gradient(135deg,#ffd100,#ffb800);color:#0d0d0d;font-size:18px;padding:16px 50px}
+        .btn-green{background:linear-gradient(135deg,#00b894,#00a381);color:#fff}
         .btn-red{background:linear-gradient(135deg,#e17055,#d63031);color:#fff}
-        .btn-green{background:linear-gradient(135deg,#00b894,#00a381);color:#fff;width:100%;box-shadow:0 6px 18px rgba(0,184,148,.35)}
-        .btn-orange{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;width:100%;box-shadow:0 6px 18px rgba(243,156,18,.3)}
-        .btn-gray{background:#888;color:#fff;width:100%}
-        .btn-outline{background:#fff;border:2.5px solid #ffd100;color:#e17055;width:100%}
-        .pcard{background:#fff;border-radius:14px;padding:16px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;border-left:5px solid #dfe6e9;cursor:pointer;transition:all .25s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-        .pcard:active{transform:scale(.97)}.pcard.live{border-left-color:#00b894;background:#f0faf6}
-        .pcard.ded{border-left-color:#e17055;opacity:.5;background:#fff5f5}.pcard.wait{border-left-color:#f39c12;background:#fffdf0}
-        .pcard .nm{font-size:16px;font-weight:800;color:#2d3436}
-        .ptag{padding:6px 12px;border-radius:12px;font-size:12px;font-weight:800}
-        .ptag-l{background:#00b894;color:#fff}.ptag-d{background:#e17055;color:#fff}.ptag-w{background:#f39c12;color:#fff;animation:pulse .8s infinite}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-        .bag-chip{display:inline-block;background:linear-gradient(135deg,#ffd100,#ffb800);color:#2d3436;padding:12px 18px;border-radius:24px;margin:5px;font-weight:800;cursor:pointer;font-size:14px;box-shadow:0 4px 14px rgba(255,184,0,.3)}.bag-chip:active{transform:scale(.9)}
-        .empty{color:#ccc;font-size:15px;text-align:center;padding:30px}
-        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:9999;justify-content:center;align-items:center}.modal.show{display:flex}
-        .modal-box{background:#fff;border-radius:22px;padding:30px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-        .modal-box h3{color:#e17055;font-size:20px;margin-bottom:12px;font-weight:900}.modal-box p{color:#636e72;font-size:15px;margin:8px 0}
-        .log{background:#fff;border-radius:12px;padding:10px 12px;max-height:120px;overflow-y:auto;font-size:12px;line-height:1.8;margin-top:10px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-        .log .ll{border-bottom:1px solid #f5f5f5;padding:3px 0}.log .lt{color:#ccc}.log .lk{color:#e17055;font-weight:700}.log .li{color:#f39c12;font-weight:700}.log .ld{color:#0984e3;font-weight:700}.log .lr{color:#00b894;font-weight:700}
-        .me{color:#e17055;font-size:12px;font-weight:800}
-        .alert-toast{background:#e17055;color:#fff;padding:14px;border-radius:12px;text-align:center;font-weight:800;font-size:15px;margin:8px 0;display:none;box-shadow:0 6px 20px rgba(225,112,85,.4)}.alert-toast.show{display:block}
-        input,select{width:100%;padding:16px;border-radius:14px;border:2.5px solid #e0e0e0;background:#fff;color:#2d3436;font-size:16px;margin:8px 0;transition:all .25s;font-weight:600}
-        input:focus,select:focus{outline:none;border-color:#ffd100;box-shadow:0 0 0 4px rgba(255,209,0,.1)}
-        .flash-red{animation:flashRed .6s}@keyframes flashRed{0%,100%{background:0 0}50%{background:rgba(225,112,85,.2)}}
-        .flash-green{animation:flashGreen .6s}@keyframes flashGreen{0%,100%{background:0 0}50%{background:rgba(0,184,148,.2)}}
+        .btn-orange{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff}
+        .btn-gray{background:#333;color:#999}
+        .btn-back{background:transparent;color:#888;border:1px solid #555;font-size:13px;padding:10px 24px}
+        .btn-sm{padding:8px 16px;font-size:13px;border-radius:20px}
+        .modes h2,.lobby h2{color:#ffd100;font-size:24px;margin-bottom:20px}
+        .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:400px;width:100%}
+        .mode-card{background:#1a1a2e;border-radius:16px;padding:20px;text-align:center;border:2px solid #333;cursor:pointer;transition:.3s}
+        .mode-card:hover{border-color:#ffd100;transform:translateY(-4px)}
+        .mode-card .icon{font-size:40px;margin-bottom:8px}
+        .mode-card .name{font-size:16px;font-weight:800;color:#ffd100}
+        .mode-card .desc{font-size:11px;color:#888;margin-top:4px}
+        .mode-card.disabled{opacity:.3;pointer-events:none}
+        .mode-tag{background:#333;color:#ffd100;padding:3px 12px;border-radius:10px;font-size:11px;margin-bottom:10px;display:inline-block}
+        .room-info{font-size:12px;color:#888;margin:4px 0}
+        .map-box{width:100%;max-width:400px;height:180px;border-radius:12px;overflow:hidden;border:2px solid #333;margin:10px 0;position:relative;background:#0a1a0a}
+        .map-inner{width:100%;height:100%}
+        .map-label{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#ffd100;padding:4px 12px;border-radius:10px;font-size:11px;font-weight:700;z-index:10;pointer-events:none}
+        .setting-row{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:400px;padding:10px 12px;background:#1a1a2e;border-radius:8px;margin:4px 0;font-size:14px}
+        .setting-row select{background:#333;color:#fff;border:1px solid #555;padding:6px 10px;border-radius:6px;font-size:13px}
+        .player-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+        .player-tag{background:#ffd100;color:#333;padding:6px 14px;border-radius:16px;font-size:13px;font-weight:700}
+        .player-tag.red{background:#e17055;color:#fff}.player-tag.blue{background:#0984e3;color:#fff}
+        .team-panel{display:flex;gap:10px;width:100%;max-width:400px;margin:10px 0}
+        .team-box{flex:1;background:#1a1a2e;border-radius:12px;padding:12px;border:2px solid #333;min-height:120px}
+        .team-box.red{border-color:#e17055}.team-box.blue{border-color:#0984e3}
+        .team-box h3{font-size:15px;margin-bottom:8px}.team-box.red h3{color:#e17055}.team-box.blue h3{color:#0984e3}
+        .team-box .member{display:block;background:#333;color:#fff;padding:6px 10px;border-radius:8px;margin:3px 0;font-size:13px;cursor:pointer}
+        .unassigned{width:100%;max-width:400px;text-align:center;color:#888;font-size:13px;margin:6px 0}
+        .unassigned span{display:inline-block;background:#333;padding:4px 10px;border-radius:10px;margin:2px;cursor:pointer}
+        .game-header{background:linear-gradient(135deg,#ffd100,#ffb800);padding:12px 16px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;width:100%;max-width:400px;margin-bottom:10px;color:#0d0d0d}
+        .game-header h3{font-size:16px}
+        .stat-row{display:flex;gap:6px;width:100%;max-width:400px;margin:6px 0}
+        .stat{flex:1;background:#1a1a2e;border-radius:10px;padding:10px;text-align:center;border:2px solid #333}
+        .stat .num{font-size:22px;font-weight:900}.stat .lbl{font-size:10px;color:#888}
+        .nav{display:flex;gap:4px;width:100%;max-width:400px;margin:8px 0}
+        .nav-btn{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:700;border-radius:10px 10px 0 0;cursor:pointer;background:#111;color:#666;border:none}
+        .nav-btn.active{background:#1a1a2e;color:#ffd100}
+        .page-panel{background:#1a1a2e;border-radius:0 0 12px 12px;padding:12px;min-height:150px;width:100%;max-width:400px}
+        .prow{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#222;border-radius:8px;margin:4px 0;border-left:4px solid #00b894;cursor:pointer}
+        .prow.dead{border-left-color:#e17055;opacity:.5}.prow.wait{border-left-color:#f39c12}
+        .prow .hearts{color:#e17055;font-size:14px}
+        .prow.shatter{animation:shatter .6s forwards}
+        @keyframes shatter{0%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.6;filter:blur(2px)}100%{transform:scale(0.8);opacity:.3;filter:blur(4px)}}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:999;justify-content:center;align-items:center}
+        .modal.show{display:flex}
+        .modal-box{background:#1a1a2e;border-radius:18px;padding:24px;max-width:350px;width:90%;text-align:center;border:2px solid #ffd100}
+        .modal-box h3{color:#ffd100;margin-bottom:8px}.modal-box p{color:#aaa;font-size:14px;margin:6px 0}
+        .log-box{background:#111;border-radius:8px;padding:8px;max-height:120px;overflow-y:auto;font-size:11px;line-height:1.6;width:100%;max-width:400px;margin:8px 0}
+        .log-box .lk{color:#e17055}.log-box .li{color:#ffd100}.log-box .lr{color:#00b894}
+        input,select{width:100%;padding:14px;border-radius:10px;border:2px solid #333;background:#1a1a2e;color:#fff;font-size:15px;margin:6px 0}
+        input:focus,select:focus{outline:none;border-color:#ffd100}
+        .timer-bar{background:#222;color:#ffd100;padding:8px;border-radius:8px;text-align:center;font-weight:700;font-size:13px;margin:4px 0;width:100%;max-width:400px}
+        .win-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:9999;justify-content:center;align-items:center;flex-direction:column}
+        .win-overlay.show{display:flex}
+        .win-overlay .trophy{font-size:80px;animation:bounce 1s infinite}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+        .win-overlay .win-text{color:#ffd100;font-size:28px;font-weight:900;margin:16px 0}
+        .win-overlay .win-name{color:#fff;font-size:36px;font-weight:900}
+        .badge{display:inline-block;padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700}
+        .badge-l{background:#00b894;color:#fff}.badge-d{background:#e17055;color:#fff}.badge-w{background:#f39c12;color:#fff}
+        .revive-bar{background:#e17055;color:#fff;padding:10px;border-radius:10px;text-align:center;font-weight:700;font-size:14px;margin:6px 0;width:100%;max-width:400px}
     </style>
 </head>
 <body>
-<div class="container">
-    <div id="loginScreen" style="padding-top:40px">
-        <div style="text-align:center;margin-bottom:24px"><div style="font-size:64px">🏃</div><h2 style="color:#e17055;font-size:26px;font-weight:900">撕名牌大作战</h2><p style="color:#636e72;font-size:14px;margin-top:4px">⚡ 奔跑吧！</p></div>
-        <input type="text" id="nameInput" placeholder="🎯 输入你的名字"><input type="text" id="roomInput" placeholder="🔢 房间号（4位数字）">
-        <button class="btn btn-green" onclick="joinGame()">🎮 加入游戏</button><button class="btn btn-outline" onclick="createRoom()" style="margin-top:8px">🏠 创建新房间</button>
-        <p style="text-align:center;color:#aaa;font-size:11px;margin-top:10px" id="connStatus">🔗 联机模式就绪</p>
-    </div>
-    <div id="gameScreen" style="display:none">
-        <div class="topbar"><h1>🏃 撕名牌</h1><span class="badge">🔑 房间 <span id="roomDisp"></span></span></div>
-        <div class="stat-row"><div class="stat-box stat-alive"><div class="big" id="aliveNum">0</div><div class="sm">🟢 存活</div></div><div class="stat-box stat-wait"><div class="big" id="waitNum">0</div><div class="sm">🟠 待确认</div></div><div class="stat-box stat-dead"><div class="big" id="deadNum">0</div><div class="sm">💀 淘汰</div></div></div>
-        <div class="name-row"><span class="alive-c" id="aliveNames"></span><span class="wait-c" id="waitNames"></span><span class="dead-c" id="deadNames"></span></div>
-        <div style="font-size:12px;color:#636e72;margin-bottom:4px">👤 <span id="myNameDisp" style="color:#e17055;font-weight:800"></span></div>
-        <div class="tabs"><div class="tab-btn active" id="tabMapBtn" onclick="switchTab('map')">🗺️ 地图</div><div class="tab-btn inactive" id="tabPlayersBtn" onclick="switchTab('players')">👥 玩家</div><div class="tab-btn inactive" id="tabBagBtn" onclick="switchTab('bag')">🎒 背包</div></div>
-        <div class="page" id="pageMap">
-            <div class="alert-toast" id="rangeAlert">🚫 超出活动范围！请立即返回！</div><div class="alert-toast" id="dropAlert" style="background:linear-gradient(135deg,#ffd100,#ffb800);color:#2d3436;box-shadow:0 6px 20px rgba(255,184,0,.4)">🎁 道具已刷新！快去拾取！</div>
-            <div class="timer-card"><div class="time" id="timerDisp">10:00</div><div class="lbl">⏰ 下次道具掉落</div></div>
-            <div id="mapContainer"><div id="amapContainer"></div><div class="map-label">📍 <span id="rangeStatus" style="color:#00b894;font-weight:800">范围内</span></div></div>
-            <div class="drop-card" id="dropCard"><div class="icon" id="dropIcon"></div><div class="title" id="dropTitle"></div><div class="dist" id="dropDist"></div><button class="btn btn-gold" onclick="attemptPickup()" style="margin-top:10px">🎁 立即拾取！</button></div>
-        </div>
-        <div class="page" id="pagePlayers" style="display:none"><div id="playerList"></div></div>
-        <div class="page" id="pageBag" style="display:none"><div id="bagArea"></div></div>
-        <div style="font-size:13px;font-weight:800;margin:10px 0 4px;color:#636e72">📜 战斗日志</div><div class="log" id="logArea"></div>
-    </div>
+<!-- 封面页 -->
+<div class="screen cover active" id="screenCover">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="logo">🏃</div>
+    <h1>撕名牌大作战</h1>
+    <p class="subtitle">⚡ 经典模式 · 象棋模式 · 多人实时对战</p>
+    <button class="btn btn-gold" onclick="showScreen('screenModes')">⚡ 进入游戏</button>
 </div>
-<div class="modal" id="killModal"><div class="modal-box"><h3>⚠️ 确认撕掉</h3><p style="font-size:32px;margin:10px 0">🫵</p><p>你确认撕掉了 <strong id="killName" style="color:#e17055;font-size:18px"></strong> 的名牌吗？</p><p style="font-size:12px;color:#aaa">对方确认后才会淘汰</p><button class="btn btn-red" onclick="doKill()" style="width:100%">✅ 确认撕掉！</button><button class="btn" onclick="closeKill()" style="width:100%;background:#f0f0f0;color:#888;margin-top:8px">❌ 误触取消</button></div></div>
-<div class="modal" id="confirmModal"><div class="modal-box"><h3>💀 你被撕了！</h3><p style="font-size:40px;margin:8px 0">😱</p><p><strong id="confirmKiller" style="color:#e17055;font-size:18px"></strong> 撕掉了你的名牌！</p><p style="font-size:13px;color:#888">请确认或否认</p><button class="btn btn-orange" onclick="confirmKilled()" style="width:100%">😵 确认淘汰</button><button class="btn btn-gray" onclick="denyKill()" style="width:100%;margin-top:6px">🤚 否认（我没被撕）</button></div></div>
-<div class="modal" id="useModal"><div class="modal-box"><h3 id="useTitle"></h3><div id="useBody"></div><button class="btn" onclick="closeUse()" style="background:#f0f0f0;color:#888;margin-top:8px">取消</button></div></div>
+
+<!-- 模式选择页 -->
+<div class="screen modes" id="screenModes">
+    <h2>选择模式</h2>
+    <div class="mode-grid">
+        <div class="mode-card" onclick="selectMode('classic')"><div class="icon">🏆</div><div class="name">经典模式</div><div class="desc">最后存活者获胜</div></div>
+        <div class="mode-card" onclick="selectMode('chess')"><div class="icon">♟️</div><div class="name">象棋模式</div><div class="desc">身份+等级+阵营</div></div>
+        <div class="mode-card disabled"><div class="icon">⚡</div><div class="name">极速模式</div><div class="desc">即将推出</div></div>
+        <div class="mode-card disabled"><div class="icon">🎯</div><div class="name">赏金模式</div><div class="desc">即将推出</div></div>
+    </div>
+    <button class="btn btn-back" onclick="showScreen('screenCover')">← 返回首页</button>
+</div>
+
+<!-- 经典模式等待大厅 -->
+<div class="screen lobby" id="screenLobbyClassic">
+    <span class="mode-tag">🏆 经典模式</span>
+    <h2>⏳ 等待大厅</h2>
+    <p class="room-info">房间号：<strong style="color:#ffd100" id="classicRoomDisp">----</strong> <span id="classicHostTag"></span></p>
+    <div class="map-box" id="classicMapBox"><div class="map-inner" id="classicMapInner"></div><div class="map-label">📍 点击地图设定中心</div></div>
+    <div class="setting-row"><span>🗺️ 活动半径</span><select id="classicRange"><option value="100">100米</option><option value="200">200米</option><option value="300" selected>300米</option><option value="400">400米</option><option value="500">500米</option></select></div>
+    <div class="setting-row"><span>👥 阵营</span><select id="classicTeam" onchange="toggleTeamOptions('classic')"><option value="none">无阵营</option><option value="teams">红蓝两队</option></select></div>
+    <div class="setting-row" id="classicAssignRow" style="display:none"><span>🎲 分配方式</span><select id="classicAssign" onchange="toggleAssignMode('classic')"><option value="random">随机分配</option><option value="free">自由组队</option></select></div>
+    <div id="classicFreePanel" style="display:none;width:100%;max-width:400px"></div>
+    <div id="classicPlayerTags" class="player-tags"></div>
+    <p style="color:#888;font-size:12px">当前 <span id="classicCount">0</span> 人</p>
+    <button class="btn btn-green" id="classicStartBtn" style="display:none">⚡ 开始游戏</button>
+    <button class="btn btn-back" onclick="leaveLobby();showScreen('screenModes')">← 返回模式选择</button>
+</div>
+
+<!-- 象棋模式等待大厅 -->
+<div class="screen lobby" id="screenLobbyChess">
+    <span class="mode-tag">♟️ 象棋模式</span>
+    <h2>⏳ 等待大厅</h2>
+    <p class="room-info">房间号：<strong style="color:#ffd100" id="chessRoomDisp">----</strong> <span id="chessHostTag"></span></p>
+    <div class="map-box" id="chessMapBox"><div class="map-inner" id="chessMapInner"></div><div class="map-label">📍 点击地图设定中心</div></div>
+    <div class="setting-row"><span>🗺️ 活动半径</span><select id="chessRange"><option value="100">100米</option><option value="200">200米</option><option value="300" selected>300米</option><option value="400">400米</option><option value="500">500米</option></select></div>
+    <div class="setting-row"><span>🎲 分配方式</span><select id="chessAssign" onchange="toggleAssignMode('chess')"><option value="random">随机分配</option><option value="free">自由组队</option></select></div>
+    <div class="setting-row"><span>🔒 淘汰后身份</span><select id="chessReveal"><option value="reveal">公开</option><option value="hide">隐藏</option></select></div>
+    <div class="setting-row"><span>⚔️ 低撕高结果</span><select id="chessLowRule"><option value="kill">低等级淘汰</option><option value="freeze">高等级停留30秒</option></select></div>
+    <div id="chessFreePanel" style="display:none;width:100%;max-width:400px"></div>
+    <div id="chessPlayerTags" class="player-tags"></div>
+    <p style="color:#888;font-size:12px">当前 <span id="chessCount">0</span> 人</p>
+    <button class="btn btn-green" id="chessStartBtn" style="display:none">⚡ 开始游戏</button>
+    <button class="btn btn-back" onclick="leaveLobby();showScreen('screenModes')">← 返回模式选择</button>
+</div>
+
+<!-- 游戏界面 -->
+<div class="screen" id="screenGame" style="justify-content:flex-start;padding-top:12px">
+    <div class="game-header"><h3>🏃 <span id="gameModeTitle">撕名牌</span></h3><span style="font-weight:800">🔑 <span id="gameRoomDisp"></span></span></div>
+    <div class="stat-row">
+        <div class="stat" style="border-color:#00b894"><div class="num" style="color:#00b894" id="aliveNum">0</div><div class="lbl">🟢 存活</div></div>
+        <div class="stat" style="border-color:#f39c12"><div class="num" style="color:#f39c12" id="waitNum">0</div><div class="lbl">🟠 待确认</div></div>
+        <div class="stat" style="border-color:#e17055"><div class="num" style="color:#e17055" id="deadNum">0</div><div class="lbl">💀 淘汰</div></div>
+    </div>
+    <div class="map-box" id="gameMapBox" style="height:150px"><div class="map-inner" id="gameMapInner"></div><div class="map-label">📍 <span id="rangeStatus" style="color:#00b894">范围内</span></div></div>
+    <div class="timer-bar">🎁 道具掉落：<span id="dropCountdown">6:00</span></div>
+    <div class="revive-bar" id="reviveBar" style="display:none">💀 你被淘汰了！使用复活卡？<span id="reviveCountdown"></span> <button class="btn btn-sm btn-orange" onclick="useReviveSelf()">复活自己</button> <button class="btn btn-sm btn-green" onclick="showReviveTeammate()">复活队友</button> <button class="btn btn-sm btn-gray" onclick="declineRevive()">放弃</button></div>
+    <div class="nav">
+        <button class="nav-btn active" id="navMap">🗺️</button><button class="nav-btn inactive" id="navPlayers">👥</button><button class="nav-btn inactive" id="navBag">🎒</button><button class="nav-btn inactive" id="navLog">📜</button>
+    </div>
+    <div class="page-panel" id="pageMap"><div id="dropCard" style="display:none;background:#222;border-radius:10px;padding:10px;text-align:center;border:2px solid #ffd100;margin:6px 0"><span id="dropIcon" style="font-size:30px"></span> <span id="dropName" style="font-weight:800;color:#ffd100"></span> <span id="dropDist" style="font-size:12px;color:#4ecdc4"></span> <button class="btn btn-sm btn-gold" onclick="pickupItem()">拾取</button></div></div>
+    <div class="page-panel" id="pagePlayers" style="display:none"><div id="playerList"></div></div>
+    <div class="page-panel" id="pageBag" style="display:none"><div id="bagArea"></div></div>
+    <div class="page-panel" id="pageLog" style="display:none"><div class="log-box" id="logArea" style="max-height:200px"></div></div>
+</div>
+
+<!-- 弹窗 -->
+<div class="modal" id="killModal"><div class="modal-box"><h3>⚠️ 确认撕掉</h3><p id="killName" style="font-size:18px;color:#e17055"></p><button class="btn btn-red" id="btnKill">✅ 确认撕掉</button><button class="btn btn-gray" id="btnCancelKill">❌ 取消</button></div></div>
+<div class="modal" id="confirmModal"><div class="modal-box"><h3>💀 你被撕了！</h3><p id="confirmKiller" style="font-size:18px;color:#e17055"></p><button class="btn btn-orange" id="btnConfirm">😵 确认淘汰</button><button class="btn btn-gray" id="btnDeny">🤚 否认</button></div></div>
+<div class="modal" id="useModal"><div class="modal-box"><h3 id="useTitle"></h3><div id="useBody"></div><button class="btn btn-gray" id="btnCancelUse">取消</button></div></div>
+<div class="modal" id="reviveModal"><div class="modal-box"><h3>🔄 选择复活对象</h3><div id="reviveTargets"></div><button class="btn btn-gray" onclick="closeModal('reviveModal')">取消</button></div></div>
+<div class="win-overlay" id="winOverlay"><div class="trophy">🏆</div><div class="win-text">游戏结束</div><div class="win-name" id="winName"></div><button class="btn btn-gold" onclick="location.reload()">🔄 再来一局</button></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ============ 密钥配置 ============
-const SUPABASE_URL = 'https://mswgibltwekuwkkllkrk.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1zd2dpYmx0d2VrdXdra2xsa3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTQwODUsImV4cCI6MjA5NTk3MDA4NX0.7eraxZGiQqVyIp6ow6R9DsfGPe5lTELcd-bRCL4gFj8';
-const AMAP_KEY = '12530b113a60115d9e162efd22d93558';
+// ============ 配置 ============
+const SB_URL='https://mswgibltwekuwkkllkrk.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1zd2dpYmx0d2VrdXdra2xsa3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTQwODUsImV4cCI6MjA5NTk3MDA4NX0.7eraxZGiQqVyIp6ow6R9DsfGPe5lTELcd-bRCL4gFj8';
+const AMAP_KEY='12530b113a60115d9e162efd22d93558';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
-// ============ Supabase ============
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let myName='',roomId='',players=[],myItems=[],gameLog=[],currentDrop=null;
-let dropSec=600,dropTimer=null,userPos=null;
-const CENTER={lat:39.909,lng:116.397},RANGE_R=300;
-const itemPool=[{name:'📍 定位卡',icon:'📍',type:'track'},{name:'🔄 复活卡',icon:'🔄',type:'revive'},{name:'🔮 雷达卡',icon:'🔮',type:'radar'}];
-let amap=null,userMarker=null,dropMarker=null,rangeCircle=null,channel=null;
+// ============ 全局状态 ============
+let myName='',roomId='',isHost=false,gameMode='classic';
+let players=[],myItems=[],gameLog=[],channel=null,pollTimer=null,lobbyTimer=null;
+let userPos=null,CENTER={lat:39.909,lng:116.397},RANGE_R=300;
+let currentDrop=null,dropSec=360,dropTimer=null;
+let lobbyMap=null,gameMap=null,userMarker=null,dropMarker=null,rangeCircle=null;
+let reviveTimer=null,reviveSec=180;
+let chessIdentities={}; // {name: '帅'}
+const CHESS_RANKS=['帅','将','象','相','车','炮','卒','兵'];
+const CHESS_LEVEL={帅:6,将:6,象:5,相:5,车:4,炮:3,卒:2,兵:2};
+const itemPool=[{name:'📍 定位卡',icon:'📍',type:'track'},{name:'🔄 复活卡',icon:'🔄',type:'revive'},{name:'🔮 雷达卡',icon:'🔮',type:'radar'},{name:'🔎 侦查卡',icon:'🔎',type:'scout'},{name:'💚 双命卡',icon:'💚',type:'double'},{name:'🛡️ 反弹卡',icon:'🛡️',type:'rebound'}];
 
-// ============ 高德地图 ============
-function initAMap(){
-    if(typeof AMap==='undefined'){setTimeout(initAMap,500);return}
-    amap=new AMap.Map('amapContainer',{zoom:16,center:[CENTER.lng,CENTER.lat]});
-    rangeCircle=new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:0.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]});
-    amap.add(rangeCircle);
-    userMarker=new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#0984e3;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700">⚡ 我</div>',offset:new AMap.Pixel(-15,-15)});
-    amap.add(userMarker);
-}
-function updateUserPos(){
-    if(!amap||!userPos)return;
-    userMarker.setPosition([userPos.lng,userPos.lat]);
-    amap.setCenter([userPos.lng,userPos.lat]);
-}
-function updateDropMarker(){
-    if(!amap)return;
-    if(dropMarker){amap.remove(dropMarker);dropMarker=null}
-    if(currentDrop){
-        dropMarker=new AMap.Marker({position:[currentDrop.lng,currentDrop.lat],content:'<div style="background:#ffd100;color:#2d3436;padding:6px 12px;border-radius:16px;font-size:13px;font-weight:800">'+currentDrop.icon+' '+currentDrop.name+'</div>',offset:new AMap.Pixel(-30,-18)});
-        amap.add(dropMarker);
-    }
-}
-function loadAMapSDK(){
-    if(typeof AMap!=='undefined'){initAMap();return}
-    const s=document.createElement('script');
-    s.src='https://webapi.amap.com/maps?v=2.0&key='+AMAP_KEY+'&callback=onAMapLoad';
-    window.onAMapLoad=initAMap;document.head.appendChild(s);
-}
-loadAMapSDK();
+// ============ 页面切换 ============
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+function showModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
 
 // ============ 语音 ============
-function speak(text,everyone){
-    if('speechSynthesis' in window){
-        speechSynthesis.cancel();
-        const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=1.35;u.pitch=1.4;u.volume=everyone?1:0.9;
-        speechSynthesis.speak(u);
-    }
-    if(everyone&&channel){channel.send({type:'broadcast',event:'game_update',payload:{type:'speak',text:text,user:myName}});}
-}
+function speakLocal(text){if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=1.3;u.pitch=1.3;speechSynthesis.speak(u)}}
+function speakAll(text){speakLocal(text);if(channel)channel.send({type:'broadcast',event:'speak',payload:{text:text}})}
 
-// ============ 标签 ============
-function switchTab(tab){
-    document.getElementById('tabMapBtn').className=tab==='map'?'tab-btn active':'tab-btn inactive';
-    document.getElementById('tabPlayersBtn').className=tab==='players'?'tab-btn active':'tab-btn inactive';
-    document.getElementById('tabBagBtn').className=tab==='bag'?'tab-btn active':'tab-btn inactive';
-    document.getElementById('pageMap').style.display=tab==='map'?'block':'none';
-    document.getElementById('pagePlayers').style.display=tab==='players'?'block':'none';
-    document.getElementById('pageBag').style.display=tab==='bag'?'block':'none';
-}
+// ============ Supabase实时 ============
+function subscribeChannel(){channel=sb.channel('room-'+roomId);channel.on('broadcast',{event:'speak'},p=>{if(p.payload.text)speakLocal(p.payload.text)});channel.on('broadcast',{event:'game'},p=>{const d=p.payload;if(d.type==='game_start'){clearInterval(lobbyTimer);loadPlayers().then(()=>startGameScreen())}});channel.subscribe()}
 
-// ============ 实时同步 ============
-function subscribeRealtime(){
-    channel=sb.channel('room-'+roomId);
-    channel.on('broadcast',{event:'game_update'},(payload)=>{
-        const d=payload.payload;
-        if(d.type==='join'&&d.user!==myName){
-            if(!players.find(p=>p.name===d.user)){players.push({id:players.length,name:d.user,alive:true,waitingKill:null});renderAll();}
-        }
-        if(d.type==='kill_request'&&d.target===myName){
-            document.getElementById('confirmKiller').textContent=d.killer;
-            document.getElementById('confirmModal').classList.add('show');
-            speak('你被'+d.killer+'撕了！请确认淘汰！');
-        }
-        if(d.type==='kill_confirmed'){
-            const p=players.find(p=>p.name===d.target);if(p){p.alive=false;p.waitingKill=null}
-            addLog('kill','💀 '+d.killer+' 淘汰了 '+d.target+'！');speak(d.killer+'淘汰了'+d.target+'！',true);
-            document.body.classList.add('flash-red');setTimeout(()=>document.body.classList.remove('flash-red'),600);
-            renderAll();checkEnd();
-        }
-        if(d.type==='kill_denied'){const p=players.find(p=>p.name===d.target);if(p)p.waitingKill=null;addLog('sys','🤚 '+d.target+' 否认被撕');document.getElementById('confirmModal').classList.remove('show');renderAll();}
-        if(d.type==='revive'){const p=players.find(p=>p.name===d.target);if(p){p.alive=true;p.waitingKill=null}addLog('revive','🔄 '+d.user+' 复活了 '+d.target+'！');speak(d.target+'复活了！重返战场！',true);document.body.classList.add('flash-green');setTimeout(()=>document.body.classList.remove('flash-green'),600);renderAll();}
-        if(d.type==='drop'){currentDrop={name:d.item.name,icon:d.item.icon,type:d.item.type,lat:d.lat,lng:d.lng};document.getElementById('dropIcon').textContent=d.item.icon;document.getElementById('dropTitle').textContent=d.item.name;document.getElementById('dropCard').classList.remove('show');addLog('drop','🎁 '+d.item.name+' 已掉落！');speak('有道具已刷新，请查看地图！',true);document.getElementById('dropAlert').classList.add('show');setTimeout(()=>document.getElementById('dropAlert').classList.remove('show'),3500);updateDropMarker();renderAll();}
-        if(d.type==='track'){addLog('item','📍 '+d.user+' 使用了定位卡！');speak(d.user+'使用了定位卡！',true);renderAll();}
-        if(d.type==='pickup'){currentDrop=null;document.getElementById('dropCard').classList.remove('show');addLog('item','🎁 '+d.user+' 拾取了道具！');updateDropMarker();renderAll();}
-        if(d.type==='speak'&&d.text&&d.user!==myName)speak(d.text,false);
-    }).subscribe();
-}
-function broadcast(data){if(channel)channel.send({type:'broadcast',event:'game_update',payload:{...data,user:myName}});}
+// ============ 模式选择 ============
+function selectMode(mode){gameMode=mode;roomId=Math.floor(1000+Math.random()*9000).toString();isHost=true;const lobbyId=mode==='chess'?'screenLobbyChess':'screenLobbyClassic';document.getElementById(mode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;document.getElementById(mode==='chess'?'chessHostTag':'classicHostTag').textContent='(房主👑)';document.getElementById(mode==='chess'?'chessStartBtn':'classicStartBtn').style.display='block';showScreen(lobbyId);initLobbyMap(mode);sb.from('rooms').upsert({id:roomId,status:'waiting',host:myName||'房主',mode:gameMode,created_at:new Date().toISOString()}).then(()=>{subscribeChannel();refreshLobby(mode);lobbyTimer=setInterval(()=>refreshLobby(mode),2000)})}
 
-// ============ 房间 ============
-async function createRoom(){
-    roomId=Math.floor(1000+Math.random()*9000).toString();
-    document.getElementById('roomInput').value=roomId;
-    await sb.from('rooms').upsert({id:roomId,status:'waiting',created_at:new Date().toISOString()});
-    alert('✅ 房间号：'+roomId+'\n\n快告诉小伙伴！');
-}
-async function joinGame(){
-    myName=document.getElementById('nameInput').value.trim();
-    roomId=document.getElementById('roomInput').value.trim();
-    if(!myName)return alert('请输入名字！');if(!roomId||roomId.length!==4||isNaN(roomId))return alert('请输入4位房间号！');
-    const{data:room}=await sb.from('rooms').select('*').eq('id',roomId).single();
-    if(!room)return alert('❌ 房间不存在！');
-    await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]'},{onConflict:'room_id,name'});
-    const{data:dbPlayers}=await sb.from('players').select('*').eq('room_id',roomId);
-    players=dbPlayers.map(p=>({id:p.id,name:p.name,alive:p.alive,waitingKill:p.waiting_kill}));
-    const me=players.find(p=>p.name===myName);
-    myItems=me&&me.items?JSON.parse(typeof me.items==='string'?me.items:'[]'):[];
-    gameLog=[];currentDrop=null;
-    const{data:roomData}=await sb.from('rooms').select('*').eq('id',roomId).single();
-    if(roomData&&roomData.drop_item){try{const di=JSON.parse(roomData.drop_item);currentDrop={name:di.name,icon:di.icon,type:di.type,lat:roomData.drop_lat,lng:roomData.drop_lng};document.getElementById('dropIcon').textContent=di.icon;document.getElementById('dropTitle').textContent=di.name;}catch(e){}}
-    document.getElementById('loginScreen').style.display='none';document.getElementById('gameScreen').style.display='block';
-    document.getElementById('roomDisp').textContent=roomId;document.getElementById('myNameDisp').textContent=myName;
-    addLog('sys','🎮 游戏开始！共 '+players.length+' 人');speak('游戏开始！');
-    subscribeRealtime();broadcast({type:'join',user:myName});
-    getUserPos();if(!currentDrop)spawnDrop();startTimer();renderAll();switchTab('map');updateDropMarker();
-}
+// ============ 加入房间 ============
+function joinRoom(mode){const nameInput=document.getElementById('joinNameInput');if(!nameInput)return;myName=nameInput.value.trim();const rid=document.getElementById('joinRoomInput').value.trim();if(!myName||!rid)return alert('请输入名字和房间号');roomId=rid;gameMode=mode;sb.from('rooms').select('*').eq('id',roomId).single().then(({data:room})=>{if(!room)return alert('房间不存在');sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'}).then(()=>{subscribeChannel();const lobbyId=mode==='chess'?'screenLobbyChess':'screenLobbyClassic';document.getElementById(mode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;showScreen(lobbyId);refreshLobby(mode);lobbyTimer=setInterval(()=>refreshLobby(mode),2000)})})}
 
-// ============ GPS ============
-function getUserPos(){
-    if(navigator.geolocation){navigator.geolocation.watchPosition(pos=>{userPos={lat:pos.coords.latitude,lng:pos.coords.longitude};checkRange();checkDropDist();updateUserPos();},()=>{userPos={lat:CENTER.lat+0.001,lng:CENTER.lng+0.001}},{enableHighAccuracy:true,maximumAge:3000});}
-    else{userPos={lat:CENTER.lat+0.001,lng:CENTER.lng+0.001}}
-}
-function dist(a,b){const R=6371000;const dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
-let wasOut=false;
-function checkRange(){
-    if(!userPos)return;const d=dist(userPos,CENTER);
-    const el=document.getElementById('rangeStatus'),ae=document.getElementById('rangeAlert');
-    if(d>RANGE_R){el.textContent='⚠️ 已超出！';el.style.color='#e17055';if(!wasOut){ae.classList.add('show');speak('警告！你已超出活动范围，请立即返回！');}wasOut=true;}
-    else{el.textContent='✅ 范围内';el.style.color='#00b894';ae.classList.remove('show');wasOut=false;}
-}
-function checkDropDist(){
-    if(!currentDrop||!userPos)return;const d=dist(userPos,currentDrop);
-    const card=document.getElementById('dropCard'),de=document.getElementById('dropDist');
-    if(d<=15){card.classList.add('show');de.textContent='📏 '+d+' 米 ✅ 快拾取！'}
-    else{card.classList.remove('show');de.textContent='📏 '+d+' 米，继续靠近！'}
-}
+// ============ 等待大厅刷新 ============
+function refreshLobby(mode){sb.from('players').select('*').eq('room_id',roomId).then(({data})=>{if(!data)return;const prefix=mode==='chess'?'chess':'classic';document.getElementById(prefix+'Count').textContent=data.length;const tagsEl=document.getElementById(prefix+'PlayerTags');if(tagsEl)tagsEl.innerHTML=data.map(p=>`<span class="player-tag${p.team==='red'?' red':p.team==='blue'?' blue':''}">${p.name}${p.name===myName?' 👑':''}</span>`).join(' ');if(isHost&&document.getElementById(prefix+'Assign')&&document.getElementById(prefix+'Assign').value==='free')renderFreePanel(mode,data);const{data:room}=sb.from('rooms').select('*').eq('id',roomId).single();if(room&&room.status==='playing'){clearInterval(lobbyTimer);loadPlayers().then(()=>startGameScreen())}})}
 
-// ============ 道具 ============
-function startTimer(){
-    dropSec=600;updateTimer();
-    dropTimer=setInterval(()=>{dropSec--;updateTimer();if(dropSec<=0){spawnDrop();dropSec=600;}},1000);
-}
-function updateTimer(){const m=Math.floor(dropSec/60),s=dropSec%60;document.getElementById('timerDisp').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
-async function spawnDrop(){
-    const item=itemPool[Math.floor(Math.random()*itemPool.length)],rlat=CENTER.lat+(Math.random()-.5)*0.003,rlng=CENTER.lng+(Math.random()-.5)*0.003;
-    currentDrop={...item,lat:rlat,lng:rlng};
-    document.getElementById('dropIcon').textContent=item.icon;document.getElementById('dropTitle').textContent=item.name;
-    document.getElementById('dropCard').classList.remove('show');
-    document.getElementById('dropAlert').classList.add('show');addLog('drop','⏰ 道具已刷新！');
-    speak('有道具已刷新，请查看地图！',true);setTimeout(()=>document.getElementById('dropAlert').classList.remove('show'),3500);
-    await sb.from('rooms').update({drop_item:JSON.stringify(item),drop_lat:rlat,drop_lng:rlng,drop_at:new Date().toISOString()}).eq('id',roomId);
-    broadcast({type:'drop',item:item,lat:rlat,lng:rlng});updateDropMarker();if(userPos)checkDropDist();renderAll();
-}
-async function attemptPickup(){
-    if(!currentDrop)return alert('没有可拾取的道具！');
-    const d=userPos?dist(userPos,currentDrop):999;if(d>15)return alert('❌ 距离 '+d+' 米，需15米内！');
-    myItems.push({name:currentDrop.name,icon:currentDrop.icon,type:currentDrop.type});
-    addLog('item','🎁 '+myName+' 拾取了 '+currentDrop.name+'！');speak('太棒了！获得'+currentDrop.name);
-    currentDrop=null;document.getElementById('dropCard').classList.remove('show');
-    document.getElementById('dropIcon').textContent='';document.getElementById('dropTitle').textContent='';
-    document.body.classList.add('flash-green');setTimeout(()=>document.body.classList.remove('flash-green'),600);
-    await sb.from('rooms').update({drop_item:null,drop_lat:null,drop_lng:null}).eq('id',roomId);
-    await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName);
-    broadcast({type:'pickup'});updateDropMarker();renderAll();
-}
+// ============ 自由组队面板 ============
+function renderFreePanel(mode,data){const prefix=mode==='chess'?'chess':'classic';const panel=document.getElementById(prefix+'FreePanel');if(!panel)return;const reds=data.filter(p=>p.team==='red'),blues=data.filter(p=>p.team==='blue'),unassigned=data.filter(p=>!p.team);panel.style.display='block';panel.innerHTML=`<div class="team-panel"><div class="team-box red"><h3>🔴 红队 (${reds.length})</h3>${reds.map(p=>`<span class="member">${p.name}</span>`).join('')}</div><div class="team-box blue"><h3>🔵 蓝队 (${blues.length})</h3>${blues.map(p=>`<span class="member">${p.name}</span>`).join('')}</div></div><div class="unassigned">未选择：${unassigned.map(p=>`<span onclick="pickTeam('${p.name}','red','${mode}')">🔴</span><span onclick="pickTeam('${p.name}','blue','${mode}')">🔵</span> ${p.name}`).join(' ')}</div>`}
+
+function pickTeam(name,team,mode){sb.from('players').update({team:team}).eq('room_id',roomId).eq('name',name).then(()=>refreshLobby(mode))}
+
+// ============ 阵营选项切换 ============
+function toggleTeamOptions(mode){const sel=document.getElementById(mode+'Team');const row=document.getElementById(mode+'AssignRow');if(sel&&row)row.style.display=sel.value==='teams'?'flex':'none'}
+function toggleAssignMode(mode){const sel=document.getElementById(mode+'Assign');const panel=document.getElementById(mode+'FreePanel');if(sel&&panel){if(sel.value==='free'){panel.style.display='block';sb.from('players').select('*').eq('room_id',roomId).then(({data})=>{if(data)renderFreePanel(mode,data)})}else{panel.style.display='none'}}}
+
+// ============ 开始游戏 ============
+async function startGame(mode){const prefix=mode==='chess'?'chess':'classic';RANGE_R=parseInt(document.getElementById(prefix+'Range').value);const assignMode=mode==='chess'?document.getElementById('chessAssign').value:(document.getElementById('classicTeam').value==='teams'?document.getElementById('classicAssign').value:'none');if(assignMode==='random'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){data.forEach((p,i)=>{sb.from('players').update({team:i%2===0?'red':'blue'}).eq('room_id',roomId).eq('name',p.name)})}}if(mode==='chess'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){const shuffled=[...CHESS_RANKS].sort(()=>Math.random()-.5);data.forEach((p,i)=>{const role=shuffled[i%shuffled.length];sb.from('players').update({chess_role:role}).eq('room_id',roomId).eq('name',p.name)})}}await sb.from('rooms').update({status:'playing',range_r:RANGE_R,center_lat:CENTER.lat,center_lng:CENTER.lng}).eq('id',roomId);clearInterval(lobbyTimer);await loadPlayers();startGameScreen();if(channel)channel.send({type:'broadcast',event:'game',payload:{type:'game_start'}})}
+
+// ============ 游戏开始 ============
+function startGameScreen(){showScreen('screenGame');document.getElementById('gameRoomDisp').textContent=roomId;document.getElementById('gameModeTitle').textContent=gameMode==='chess'?'象棋模式':'经典模式';myItems=[];gameLog=[];addLog('🎮 游戏开始！');speakAll('游戏开始！');initGameMap();spawnDropItem();startDropTimer();startPolling();renderAll();document.getElementById('navMap').click()}
+
+// ============ 地图初始化 ============
+function initLobbyMap(mode){setTimeout(()=>{if(typeof AMap==='undefined')return;const containerId=mode==='chess'?'chessMapInner':'classicMapInner';lobbyMap=new AMap.Map(containerId,{zoom:16});getUserPosForLobby();lobbyMap.on('click',e=>{if(!isHost)return;CENTER={lat:e.lnglat.lat,lng:e.lnglat.lng};lobbyMap.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(lobbyMap);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(lobbyMap)})},500)}
+
+function initGameMap(){setTimeout(()=>{if(typeof AMap==='undefined')return;gameMap=new AMap.Map('gameMapInner',{zoom:16,center:[CENTER.lng,CENTER.lat]});rangeCircle=new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]});rangeCircle.setMap(gameMap);userMarker=new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#0984e3;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">⚡ 我</div>',offset:new AMap.Pixel(-15,-15)});userMarker.setMap(gameMap)},500)}
+
+function getUserPosForLobby(){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{CENTER={lat:p.coords.latitude,lng:p.coords.longitude};if(lobbyMap){lobbyMap.setCenter([CENTER.lng,CENTER.lat]);lobbyMap.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(lobbyMap);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(lobbyMap)}},()=>{},{enableHighAccuracy:true,timeout:10000})}}
+
+function getUserPosGame(){if(navigator.geolocation){navigator.geolocation.watchPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};if(gameMap&&userMarker)userMarker.setPosition([userPos.lng,userPos.lat]);checkDropDist()},()=>{},{enableHighAccuracy:true})}}
+
+function dist(a,b){const R=6371000;const dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)))}
+
+// ============ 道具系统 ============
+function spawnDropItem(){const item=itemPool[Math.floor(Math.random()*itemPool.length)],rlat=CENTER.lat+(Math.random()-.5)*.003,rlng=CENTER.lng+(Math.random()-.5)*.003;currentDrop={...item,lat:rlat,lng:rlng};const dc=document.getElementById('dropCard');dc.style.display='block';document.getElementById('dropIcon').textContent=item.icon;document.getElementById('dropName').textContent=item.name;if(dropMarker&&gameMap)dropMarker.setMap(null);if(gameMap){dropMarker=new AMap.Marker({position:[rlng,rlat],content:'<div style="background:#ffd100;color:#333;padding:4px 10px;border-radius:14px;font-size:12px;font-weight:700">'+item.icon+'</div>',offset:new AMap.Pixel(-15,-15)});dropMarker.setMap(gameMap)}speakAll('道具已刷新！')}
+function checkDropDist(){if(!currentDrop||!userPos)return;const d=dist(userPos,currentDrop);if(d<=25){document.getElementById('dropCard').style.display='block';document.getElementById('dropDist').textContent='📏 '+d+' 米 ✅ 可拾取'}else{document.getElementById('dropDist').textContent='📏 '+d+' 米'}}
+function pickupItem(){if(!currentDrop)return;const d=userPos?dist(userPos,currentDrop):999;if(d>25)return alert('❌ 距离太远！');myItems.push({name:currentDrop.name,icon:currentDrop.icon,type:currentDrop.type});addLog('🎁 '+myName+' 拾取了 '+currentDrop.name);speakAll(myName+'拾取了'+currentDrop.name);currentDrop=null;document.getElementById('dropCard').style.display='none';if(dropMarker&&gameMap){dropMarker.setMap(null);dropMarker=null}saveItems();renderAll()}
+function startDropTimer(){dropSec=360;updateDropDisplay();dropTimer=setInterval(()=>{dropSec--;updateDropDisplay();if(dropSec<=0){spawnDropItem();dropSec=360}},1000)}
+function updateDropDisplay(){const m=Math.floor(dropSec/60),s=dropSec%60;document.getElementById('dropCountdown').textContent=m+':'+String(s).padStart(2,'0')}
+
+// ============ 加载玩家 ============
+async function loadPlayers(){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data)players=data.map(p=>({id:p.id,name:p.name,alive:p.alive,waitingKill:p.waiting_kill,hearts:p.hearts||1,team:p.team,chess_role:p.chess_role}));const me=players.find(p=>p.name===myName);if(me&&me.waitingKill&&!document.getElementById('confirmModal').classList.contains('show')){if(gameMode==='chess'){handleChessKill(me.waitingKill,myName)}else{document.getElementById('confirmKiller').textContent=me.waitingKill;showModal('confirmModal');speakLocal('你被'+me.waitingKill+'撕了！')}}}
+function startPolling(){pollTimer=setInterval(async()=>{await loadPlayers();renderAll();checkEnd()},2000)}
+
+// ============ 象棋判定 ============
+async function handleChessKill(attacker,target){const a=players.find(p=>p.name===attacker),t=players.find(p=>p.name===target);if(!a||!t)return;const al=CHESS_LEVEL[a.chess_role]||0,tl=CHESS_LEVEL[t.chess_role]||0;let result='';if(a.chess_role==='兵'||a.chess_role==='卒'){if(t.chess_role==='帅'||t.chess_role==='将'){result='kill_target'}}else if(al>tl){result='kill_target'}else if(al<tl){const rule=document.getElementById('chessLowRule')?document.getElementById('chessLowRule').value:'kill';result=rule==='freeze'?'freeze':'kill_attacker'}else{result='both'}if(result==='kill_target'){t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',target);addLog('💀 '+attacker+' 撕了 '+target+'（等级压制）');speakAll(attacker+'淘汰了'+target)}else if(result==='kill_attacker'){a.alive=false;a.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',attacker);addLog('💀 '+attacker+' 逆撕失败，自己淘汰');speakAll(attacker+'逆撕失败！')}else if(result==='both'){a.alive=false;a.hearts=0;t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',attacker);await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',target);addLog('💀 '+attacker+' 与 '+target+' 同归于尽');speakAll('同归于尽！')}else if(result==='freeze'){addLog('❄️ '+target+' 高等级被冻结30秒');speakAll(target+'被冻结30秒')}renderAll();checkEnd()}
 
 // ============ 淘汰 ============
 let killTarget='';
-function clickP(name){
-    if(name===myName)return;const p=players.find(p=>p.name===name);
-    if(!p||!p.alive||p.waitingKill)return;
-    killTarget=name;document.getElementById('killName').textContent=name;
-    document.getElementById('killModal').classList.add('show');
-}
-async function doKill(){
-    const p=players.find(p=>p.name===killTarget);if(!p){closeKill();return}
-    p.waitingKill=myName;await sb.from('players').update({waiting_kill:myName}).eq('room_id',roomId).eq('name',killTarget);
-    addLog('sys','⚡ '+myName+' 发起淘汰 '+killTarget+'，等待确认...');
-    broadcast({type:'kill_request',target:killTarget,killer:myName});
-    killTarget='';document.getElementById('killModal').classList.remove('show');
-    renderAll();checkPendings();
-}
-function closeKill(){killTarget='';document.getElementById('killModal').classList.remove('show')}
-function checkPendings(){
-    const me=players.find(p=>p.name===myName);
-    if(me&&me.waitingKill&&!document.getElementById('confirmModal').classList.contains('show')){
-        document.getElementById('confirmKiller').textContent=me.waitingKill;
-        document.getElementById('confirmModal').classList.add('show');
-        speak('你被'+me.waitingKill+'撕了！请确认淘汰！');
-    }
-}
-async function confirmKilled(){
-    const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;
-    const killerName=me.waitingKill;me.alive=false;me.waitingKill=null;
-    await sb.from('players').update({alive:false,waiting_kill:null}).eq('room_id',roomId).eq('name',myName);
-    addLog('kill','💀 '+killerName+' 淘汰了 '+myName+'！');
-    document.body.classList.add('flash-red');setTimeout(()=>document.body.classList.remove('flash-red'),600);
-    speak(killerName+'淘汰了'+myName+'！',true);
-    broadcast({type:'kill_confirmed',target:myName,killer:killerName});
-    const rwd=itemPool[Math.floor(Math.random()*itemPool.length)];
-    myItems.push({name:rwd.name,icon:rwd.icon,type:rwd.type});
-    await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName);
-    addLog('item','🏆 淘汰奖励：'+killerName+' 获得 '+rwd.name+'！');
-    document.getElementById('confirmModal').classList.remove('show');renderAll();checkEnd();
-}
-async function denyKill(){
-    const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;
-    const killerName=me.waitingKill;me.waitingKill=null;
-    await sb.from('players').update({waiting_kill:null}).eq('room_id',roomId).eq('name',myName);
-    addLog('sys','🤚 '+myName+' 否认被 '+killerName+' 撕掉，继续游戏！');
-    broadcast({type:'kill_denied',target:myName,killer:killerName});
-    document.getElementById('confirmModal').classList.remove('show');renderAll();
-}
-function checkEnd(){
-    const alv=players.filter(p=>p.alive&&!p.waitingKill);
-    if(alv.length<=1&&players.filter(p=>p.waitingKill).length===0){
-        addLog('sys','🏆 游戏结束！获胜者：'+(alv[0]?.name||'无人'));
-        speak('游戏结束！获胜者是'+(alv[0]?.name||'无人')+'！恭喜！');clearInterval(dropTimer);
-    }
-}
+function clickP(name){if(name===myName)return;const me=players.find(p=>p.name===myName);if(!me||!me.alive)return;const p=players.find(p=>p.name===name);if(!p||!p.alive||p.waitingKill)return;if(gameMode==='chess'){const al=CHESS_LEVEL[me.chess_role]||0,tl=CHESS_LEVEL[p.chess_role]||0;if(me.team===p.team)return alert('不能撕队友！');handleChessKill(myName,name);return}killTarget=name;document.getElementById('killName').textContent=name;showModal('killModal')}
+async function doKill(){if(!killTarget)return;const p=players.find(p=>p.name===killTarget);if(!p)return;if(p.hearts>1){p.hearts--;await sb.from('players').update({hearts:p.hearts}).eq('room_id',roomId).eq('name',killTarget);addLog('💚 '+killTarget+' 消耗一颗心，剩余'+p.hearts+'心');speakAll(killTarget+'失去一颗心！')}else if(myItems.find(i=>i.type==='rebound')){addLog('🛡️ '+killTarget+' 反弹！'+myName+' 被反杀');speakAll(killTarget+'反弹！')}else{p.waitingKill=myName;await sb.from('players').update({waiting_kill:myName}).eq('room_id',roomId).eq('name',killTarget);addLog('⚡ '+myName+' 发起淘汰 '+killTarget)}closeModal('killModal');killTarget='';await loadPlayers();renderAll()}
+async function confirmKilled(){const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;const kn=me.waitingKill;me.alive=false;me.waitingKill=null;await sb.from('players').update({alive:false,waiting_kill:null}).eq('room_id',roomId).eq('name',myName);addLog('💀 '+kn+' 淘汰了 '+myName);speakAll(kn+'淘汰了'+myName);closeModal('confirmModal');checkRevive();const rwd=itemPool[Math.floor(Math.random()*6)];myItems.push(rwd);addLog('🏆 奖励：'+rwd.name);saveItems();await loadPlayers();renderAll();checkEnd()}
+async function denyKill(){const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;me.waitingKill=null;await sb.from('players').update({waiting_kill:null}).eq('room_id',roomId).eq('name',myName);addLog('🤚 '+myName+' 否认被撕');closeModal('confirmModal');await loadPlayers();renderAll()}
 
-// ============ 使用道具 ============
-function useItem(idx){
-    const item=myItems[idx],m=document.getElementById('useModal');
-    if(item.type==='track'){
-        const tg=players.filter(p=>p.alive&&!p.waitingKill&&p.name!==myName);
-        if(!tg.length)return alert('没有可定位的目标！');
-        document.getElementById('useTitle').textContent='📍 定位卡（5分钟）';
-        document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doTrack('${p.name}',${idx})" style="width:100%;margin:5px 0">📍 ${p.name}</button>`).join('');
-        m.classList.add('show');
-    }else if(item.type==='revive'){
-        const tg=players.filter(p=>!p.alive);
-        if(!tg.length)return alert('没有可复活的玩家！');
-        document.getElementById('useTitle').textContent='🔄 复活卡';
-        document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-green" onclick="doRevive('${p.name}',${idx})" style="width:100%;margin:5px 0">🔄 ${p.name}</button>`).join('');
-        m.classList.add('show');
-    }else if(item.type==='radar'){
-        const alv=players.filter(p=>p.alive);
-        document.getElementById('useTitle').textContent='🔮 雷达卡（1分钟）';
-        document.getElementById('useBody').innerHTML='<p style="color:#f39c12;font-size:16px">📡 扫描完成！</p>'+alv.map(p=>`<p style="color:#00b894;font-weight:700">🟢 ${p.name}</p>`).join('');
-        m.classList.add('show');myItems.splice(idx,1);saveItems();
-        addLog('item','🔮 '+myName+' 使用雷达卡（1分钟）！');speak('雷达扫描完成！');
-        setTimeout(()=>{m.classList.remove('show');renderAll();},1500);
-    }
-}
-async function doTrack(name,idx){
-    addLog('item','📍 '+myName+' 查看【'+name+'】位置（5分钟）');
-    alert('📍 【'+name+'】的位置已显示！\n\n持续5分钟，仅你可见');
-    speak('定位成功！',true);broadcast({type:'track'});
-    myItems.splice(idx,1);await saveItems();
-    document.getElementById('useModal').classList.remove('show');renderAll();
-}
-async function doRevive(name,idx){
-    const p=players.find(p=>p.name===name);if(p){p.alive=true;p.waitingKill=null}
-    await sb.from('players').update({alive:true,waiting_kill:null}).eq('room_id',roomId).eq('name',name);
-    addLog('revive','🔄 '+myName+' 复活了 '+name+'！');speak(name+'复活了！重返战场！',true);
-    broadcast({type:'revive',target:name});
-    document.body.classList.add('flash-green');setTimeout(()=>document.body.classList.remove('flash-green'),600);
-    myItems.splice(idx,1);await saveItems();
-    document.getElementById('useModal').classList.remove('show');renderAll();
-}
-function closeUse(){document.getElementById('useModal').classList.remove('show')}
-async function saveItems(){await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName)}
+// ============ 复活弹窗 ============
+function checkRevive(){const me=players.find(p=>p.name===myName);if(!me||me.alive)return;const reviveIdx=myItems.findIndex(i=>i.type==='revive');if(reviveIdx===-1)return;reviveSec=180;document.getElementById('reviveBar').style.display='block';updateReviveCountdown();reviveTimer=setInterval(()=>{reviveSec--;updateReviveCountdown();if(reviveSec<=0){declineRevive()}},1000)}
+function updateReviveCountdown(){const m=Math.floor(reviveSec/60),s=reviveSec%60;document.getElementById('reviveCountdown').textContent=m+':'+String(s).padStart(2,'0')}
+function useReviveSelf(){const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;const me=players.find(p=>p.name===myName);if(!me)return;me.alive=true;me.hearts=1;sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',myName);myItems.splice(idx,1);saveItems();clearReviveBar();addLog('🔄 '+myName+' 复活了自己');speakAll(myName+'复活了！');loadPlayers();renderAll()}
+function showReviveTeammate(){showModal('reviveModal');const deads=players.filter(p=>!p.alive&&p.name!==myName);document.getElementById('reviveTargets').innerHTML=deads.length?deads.map(p=>`<button class="btn btn-sm btn-green" onclick="reviveTeammate('${p.name}')" style="margin:3px">🔄 ${p.name}</button>`).join(''):'<p style="color:#888">无淘汰队友</p>'}
+async function reviveTeammate(name){const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);myItems.splice(idx,1);saveItems();closeModal('reviveModal');clearReviveBar();addLog('🔄 '+myName+' 复活了 '+name);speakAll(name+'复活了！');loadPlayers();renderAll()}
+function declineRevive(){clearReviveBar()}
+function clearReviveBar(){clearInterval(reviveTimer);document.getElementById('reviveBar').style.display='none';reviveSec=180}
+
+// ============ 道具使用 ============
+function useItem(idx){const item=myItems[idx];if(item.type==='track'){const tg=players.filter(p=>p.alive&&p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='📍 定位卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doTrack('${p.name}',${idx})">📍 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='revive'){const tg=players.filter(p=>!p.alive);if(!tg.length)return alert('无人可复活');document.getElementById('useTitle').textContent='🔄 复活卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-green" onclick="doRevive('${p.name}',${idx})">🔄 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='radar'){const alv=players.filter(p=>p.alive);document.getElementById('useTitle').textContent='🔮 雷达卡';document.getElementById('useBody').innerHTML='<p style="color:#00b894;font-weight:700">📡 存活：'+alv.map(p=>p.name).join('、')+'</p>';showModal('useModal');myItems.splice(idx,1);saveItems();addLog('🔮 使用雷达卡');speakAll('雷达扫描完成');setTimeout(()=>{closeModal('useModal');renderAll()},2000)}else if(item.type==='scout'){const tg=players.filter(p=>p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='🔎 侦查卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doScout('${p.name}',${idx})">🔎 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='double'){const me=players.find(p=>p.name===myName);if(!me)return;me.hearts=(me.hearts||1)+1;sb.from('players').update({hearts:me.hearts}).eq('room_id',roomId).eq('name',myName);myItems.splice(idx,1);saveItems();addLog('💚 '+myName+' 使用双命卡，生命+1');speakAll(myName+'生命+1！');renderAll()}else if(item.type==='rebound'){addLog('🛡️ 反弹卡已装备');alert('🛡️ 反弹卡已自动装备，被撕时触发')}}
+async function doTrack(name,idx){addLog('📍 '+myName+' 定位 '+name);alert('📍 '+name+' 的位置已显示（5分钟）');myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
+async function doRevive(name,idx){await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);addLog('🔄 '+myName+' 复活了 '+name);speakAll(name+'复活了！');myItems.splice(idx,1);saveItems();closeModal('useModal');loadPlayers();renderAll()}
+async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)return;const info=gameMode==='chess'?'身份：'+(p.chess_role||'未知'):'队伍：'+(p.team||'无');addLog('🔎 '+myName+' 侦查 '+name+' - '+info);speakAll(name+' - '+info);alert('🔎 '+name+'：'+info);myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 
 // ============ 渲染 ============
-function renderAll(){
-    const alv=players.filter(p=>p.alive&&!p.waitingKill),wait=players.filter(p=>p.waitingKill),ded=players.filter(p=>!p.alive);
-    document.getElementById('aliveNum').textContent=alv.length;document.getElementById('waitNum').textContent=wait.length;document.getElementById('deadNum').textContent=ded.length;
-    document.getElementById('aliveNames').textContent='🟢 '+(alv.length?alv.map(p=>p.name).join('、'):'无');
-    document.getElementById('waitNames').textContent=wait.length?'  |  🟠 '+wait.map(p=>p.name+'←'+p.waitingKill).join('、'):'';
-    document.getElementById('deadNames').textContent=ded.length?'  |  💀 '+ded.map(p=>p.name).join('、'):'';
-    document.getElementById('playerList').innerHTML=players.map(p=>{let cls='live',tagCls='ptag-l',tagText='存活';if(!p.alive){cls='ded';tagCls='ptag-d';tagText='淘汰';}if(p.waitingKill){cls='wait';tagCls='ptag-w';tagText='待确认←'+p.waitingKill;}const clickable=p.alive&&!p.waitingKill&&p.name!==myName;return `<div class="pcard ${cls}" ${clickable?"onclick=clickP('"+p.name+"')":''}><span class="nm">${!p.alive?'💀':p.waitingKill?'🟠':'🟢'} ${p.name}${p.name===myName?' <span class="me">(你)</span>':''}</span><span class="ptag ${tagCls}">${tagText}</span></div>`}).join('');
-    document.getElementById('bagArea').innerHTML=myItems.length?myItems.map((it,i)=>`<span class="bag-chip" onclick="useItem(${i})">${it.icon} ${it.name}</span>`).join(' '):'<div class="empty">🎒 背包空空如也</div>';
-    document.getElementById('logArea').innerHTML=gameLog.slice(-10).reverse().map(l=>`<div class="ll"><span class="lt">${l.time}</span> <span class="l${l.type==='kill'?'k':l.type==='item'?'i':l.type==='drop'?'d':l.type==='revive'?'r':'i'}">${l.msg}</span></div>`).join('');
-}
-function addLog(type,msg){gameLog.push({type,msg,time:new Date().toLocaleTimeString()});renderAll()}
-setInterval(()=>{if(players.length>0){const me=players.find(p=>p.name===myName);if(me&&me.waitingKill&&!document.getElementById('confirmModal').classList.contains('show')){document.getElementById('confirmKiller').textContent=me.waitingKill;document.getElementById('confirmModal').classList.add('show');speak('你被'+me.waitingKill+'撕了！请确认淘汰！');}}},2000);
+function renderAll(){const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);document.getElementById('aliveNum').textContent=alv.length;document.getElementById('waitNum').textContent=wait.length;document.getElementById('deadNum').textContent=ded.length;document.getElementById('playerList').innerHTML=players.map(p=>{let cls='live',tagText='存活';if(!p.alive){cls='ded';tagText='淘汰'}if(p.waitingKill){cls='wait';tagText='待确认←'+p.waitingKill}return `<div class="prow ${cls}" onclick="${p.alive&&!p.waitingKill&&p.name!==myName?"clickP('"+p.name+"')":''}"><span>${!p.alive?'💀':p.waitingKill?'🟠':'🟢'} ${p.name}${p.name===myName?' (你)':''}${gameMode==='chess'&&p.chess_role?' ['+p.chess_role+']':''}${p.team?(' '+(p.team==='red'?'🔴':'🔵')):''}</span><span class="hearts">${'❤️'.repeat(p.hearts||0)||'🖤'}</span></div>`}).join('');document.getElementById('bagArea').innerHTML=myItems.length?myItems.map((it,i)=>`<button class="btn btn-gold" style="display:inline-block;margin:3px;padding:8px 14px;font-size:12px;width:auto" onclick="useItem(${i})">${it.icon} ${it.name}</button>`).join(''):'<div style="color:#888;text-align:center;padding:20px">🎒 背包空空如也</div>';document.getElementById('logArea').innerHTML=gameLog.slice(-15).reverse().map(l=>`<div style="padding:2px 0;border-bottom:1px solid #222"><span style="color:#555;font-size:10px">${l.time}</span> <span class="${l.type==='kill'?'lk':l.type==='item'?'li':'lr'}">${l.msg}</span></div>`).join('')}
+function addLog(msg){const type=msg.includes('💀')?'kill':msg.includes('🎁')||msg.includes('🏆')||msg.includes('🔮')||msg.includes('📍')||msg.includes('🔎')||msg.includes('💚')||msg.includes('🛡️')?'item':'revive';gameLog.push({msg,time:new Date().toLocaleTimeString(),type});renderAll()}
+async function saveItems(){const me=players.find(p=>p.name===myName);if(me)await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName)}
+function checkEnd(){const alv=players.filter(p=>p.alive);if(alv.length<=1&&players.length>0){const winner=alv[0]?.name||'无人';addLog('🏆 游戏结束！获胜者：'+winner);speakAll('游戏结束！');clearInterval(pollTimer);clearInterval(dropTimer);document.getElementById('winName').textContent=winner;document.getElementById('winOverlay').classList.add('show')}}
+
+async function leaveLobby(){if(channel){channel.unsubscribe();channel=null}clearInterval(lobbyTimer);await sb.from('players').delete().eq('room_id',roomId).eq('name',myName)}
+
+// ============ 按钮事件绑定 ============
+document.getElementById('btnKill').addEventListener('click',doKill);
+document.getElementById('btnCancelKill').addEventListener('click',()=>closeModal('killModal'));
+document.getElementById('btnConfirm').addEventListener('click',confirmKilled);
+document.getElementById('btnDeny').addEventListener('click',denyKill);
+document.getElementById('btnCancelUse').addEventListener('click',()=>closeModal('useModal'));
+document.getElementById('navMap').addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('navMap').classList.add('active');document.getElementById('pageMap').style.display='block';document.getElementById('pagePlayers').style.display='none';document.getElementById('pageBag').style.display='none';document.getElementById('pageLog').style.display='none'});
+document.getElementById('navPlayers').addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('navPlayers').classList.add('active');document.getElementById('pageMap').style.display='none';document.getElementById('pagePlayers').style.display='block';document.getElementById('pageBag').style.display='none';document.getElementById('pageLog').style.display='none'});
+document.getElementById('navBag').addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('navBag').classList.add('active');document.getElementById('pageMap').style.display='none';document.getElementById('pagePlayers').style.display='none';document.getElementById('pageBag').style.display='block';document.getElementById('pageLog').style.display='none'});
+document.getElementById('navLog').addEventListener('click',()=>{document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('navLog').classList.add('active');document.getElementById('pageMap').style.display='none';document.getElementById('pagePlayers').style.display='none';document.getElementById('pageBag').style.display='none';document.getElementById('pageLog').style.display='block'});
+document.getElementById('classicStartBtn').addEventListener('click',()=>startGame('classic'));
+document.getElementById('chessStartBtn').addEventListener('click',()=>startGame('chess'));
+
+// ============ 加载高德地图 ============
+const s=document.createElement('script');s.src='https://webapi.amap.com/maps?v=2.0&key='+AMAP_KEY;document.head.appendChild(s);
+s.onload=function(){getUserPosForLobby();getUserPosGame()};
+setInterval(()=>{if(userPos&&currentDrop)checkDropDist()},3000);
 </script>
 </body>
 </html>
