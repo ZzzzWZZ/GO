@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>测试</title></head>
+<body>
+<h2>Supabase 连接测试</h2>
+<button onclick="test()">创建房间并加入</button>
+<pre id="log"></pre>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb = window.supabase.createClient('https://mswgibltwekuwkkllkrk.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1zd2dpYmx0d2VrdXdra2xsa3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTQwODUsImV4cCI6MjA5NTk3MDA4NX0.7eraxZGiQqVyIp6ow6R9DsfGPe5lTELcd-bRCL4gFj8');
+const log = (msg) => document.getElementById('log').textContent += msg + '\n';
+
+async function test() {
+    const rid = Math.floor(1000+Math.random()*9000).toString();
+    log('创建房间: '+rid);
+    let r = await sb.from('rooms').upsert({id:rid,status:'waiting'});
+    log('rooms写入: ' + (r.error ? r.error.message : 'OK'));
+    
+    r = await sb.from('players').upsert({room_id:rid, name:'测试员', alive:true, hearts:1}, {onConflict:'room_id,name'});
+    log('players写入: ' + (r.error ? r.error.message : 'OK'));
+    
+    r = await sb.from('players').select('*').eq('room_id',rid);
+    log('查询玩家: ' + JSON.stringify(r.data));
+    log('玩家人数: ' + (r.data ? r.data.length : 0));
+}
+</script>
+</body>
+</html>
