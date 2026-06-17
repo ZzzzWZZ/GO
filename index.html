@@ -163,8 +163,8 @@ async function createRoom(mode){
     document.getElementById(mode==='chess'?'chessHostTag':'classicHostTag').textContent='(房主👑)';
     document.getElementById(mode==='chess'?'chessStartBtn':'classicStartBtn').style.display='block';
     showScreen(lobbyId);initLobbyMap(mode);
-    await sb.from('rooms').upsert({id:roomId,status:'waiting',host:myName,mode:gameMode,created_at:new Date().toISOString()});
-    await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'});
+    await sb.from('rooms').upsert({id:roomId,status:'waiting',host:myName,mode:gameMode});
+    await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,hearts:1},{onConflict:'room_id,name'});
     subscribeChannel();refreshLobby(mode);lobbyTimer=setInterval(()=>refreshLobby(mode),2000);
 }
 async function joinRoom(){
@@ -172,7 +172,7 @@ async function joinRoom(){
     if(!roomId||roomId.length!==4||isNaN(roomId))return alert('请输入4位房间号');
     const{data:room}=await sb.from('rooms').select('*').eq('id',roomId).single();
     if(!room)return alert('房间不存在');gameMode=room.mode||'classic';isHost=false;
-    await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'});
+    await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,hearts:1},{onConflict:'room_id,name'});
     subscribeChannel();const lobbyId=gameMode==='chess'?'screenLobbyChess':'screenLobbyClassic';
     document.getElementById(gameMode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;
     showScreen(lobbyId);refreshLobby(gameMode);lobbyTimer=setInterval(()=>refreshLobby(gameMode),2000);
