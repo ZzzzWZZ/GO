@@ -183,33 +183,28 @@ async function createRoom(mode){
     await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'});
     subscribeChannel();refreshLobby(mode);lobbyTimer=setInterval(()=>refreshLobby(mode),2000);
 }
-
 // ============ 加入房间 ============
 async function joinRoom(){
     myName=currentUser.username;roomId=document.getElementById('joinRoomInput').value.trim();
     if(!roomId||roomId.length!==4||isNaN(roomId))return alert('请输入4位房间号');
-    const{data:room}=await sb.from('rooms').select('*').eq('id',roomId).single();
-    if(!room)return alert('房间不存在');gameMode=room.mode||'classic';isHost=false;
+    const{data:room,error}=await sb.from('rooms').select('*').filter('id','eq',roomId).single();
+    if(error||!room)return alert('房间不存在');gameMode=room.mode||'classic';isHost=false;
     await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,waiting_kill:null,items:'[]',hearts:1,team:null,chess_role:null},{onConflict:'room_id,name'});
     subscribeChannel();const lobbyId=gameMode==='chess'?'screenLobbyChess':'screenLobbyClassic';
     document.getElementById(gameMode==='chess'?'chessRoomDisp':'classicRoomDisp').textContent=roomId;
     showScreen(lobbyId);refreshLobby(gameMode);lobbyTimer=setInterval(()=>refreshLobby(gameMode),2000);
 }
-
 // ============ 刷新大厅 ============
 async function refreshLobby(mode){
-    const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(!data)return;
+    const{data,error}=await sb.from('players').select('*').filter('room_id','eq',roomId);
+    if(error||!data)return;
     const prefix=mode==='chess'?'chess':'classic';
     document.getElementById(prefix+'Count').textContent=data.length;
     const tagsEl=document.getElementById(prefix+'PlayerTags');if(tagsEl)tagsEl.innerHTML=data.map(p=>`<span class="player-tag${p.team==='red'?' red':p.team==='blue'?' blue':''}">${p.name}${p.name===myName&&isHost?' 👑':''}</span>`).join(' ');
     if(isHost&&document.getElementById(prefix+'Assign')&&document.getElementById(prefix+'Assign').value==='free')renderFreePanel(mode,data);
-    const{data:room}=await sb.from('rooms').select('*').eq('id',roomId).single();if(room&&room.status==='playing'){clearInterval(lobbyTimer);await loadPlayers();startGameScreen()}
+    const{data:room}=await sb.from('rooms').select('*').filter('id','eq',roomId).single();
+    if(room&&room.status==='playing'){clearInterval(lobbyTimer);await loadPlayers();startGameScreen();}
 }
-function renderFreePanel(mode,data){const prefix=mode==='chess'?'chess':'classic';const panel=document.getElementById(prefix+'FreePanel');if(!panel)return;const reds=data.filter(p=>p.team==='red'),blues=data.filter(p=>p.team==='blue'),un=data.filter(p=>!p.team);panel.style.display='block';panel.innerHTML=`<div class="team-panel"><div class="team-box red"><h3>🔴 红队 (${reds.length})</h3>${reds.map(p=>`<span class="member">${p.name}</span>`).join('')}</div><div class="team-box blue"><h3>🔵 蓝队 (${blues.length})</h3>${blues.map(p=>`<span class="member">${p.name}</span>`).join('')}</div></div><div class="unassigned">未选择：${un.map(p=>`<span onclick="pickTeam('${p.name}','red','${mode}')">🔴</span><span onclick="pickTeam('${p.name}','blue','${mode}')">🔵</span> ${p.name}`).join(' ')}</div>`}
-async function pickTeam(name,team,mode){await sb.from('players').update({team}).eq('room_id',roomId).eq('name',name);refreshLobby(mode)}
-function toggleTeamOptions(mode){const sel=document.getElementById(mode+'Team');const row=document.getElementById(mode+'AssignRow');if(sel&&row)row.style.display=sel.value==='teams'?'flex':'none'}
-function toggleAssignMode(mode){const sel=document.getElementById(mode+'Assign');const panel=document.getElementById(mode+'FreePanel');if(sel&&panel){if(sel.value==='free'){panel.style.display='block';sb.from('players').select('*').eq('room_id',roomId).then(({data})=>{if(data)renderFreePanel(mode,data)})}else{panel.style.display='none'}}}
-
 // ============ 开始游戏 ============
 async function startGame(mode){const prefix=mode==='chess'?'chess':'classic';RANGE_R=parseInt(document.getElementById(prefix+'Range').value);const assignEl=mode==='chess'?document.getElementById('chessAssign'):(document.getElementById('classicTeam').value==='teams'?document.getElementById('classicAssign'):null);if(assignEl&&assignEl.value==='random'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data)data.forEach((p,i)=>{sb.from('players').update({team:i%2===0?'red':'blue'}).eq('room_id',roomId).eq('name',p.name)})}if(mode==='chess'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){const shuffled=[...CHESS_RANKS].sort(()=>Math.random()-.5);data.forEach((p,i)=>{sb.from('players').update({chess_role:shuffled[i%shuffled.length]}).eq('room_id',roomId).eq('name',p.name)})}}await sb.from('rooms').update({status:'playing',range_r:RANGE_R,center_lat:CENTER.lat,center_lng:CENTER.lng}).eq('id',roomId);clearInterval(lobbyTimer);await loadPlayers();startGameScreen();if(channel)channel.send({type:'broadcast',event:'game',payload:{type:'game_start'}})}
 function startGameScreen(){showScreen('screenGame');document.getElementById('gameRoomDisp').textContent=roomId;document.getElementById('gameModeTitle').textContent=gameMode==='chess'?'象棋模式':'经典模式';myItems=[];gameLog=[];addLog('🎮 游戏开始！');speakAll('游戏开始！');initGameMap();spawnDropItem();startDropTimer();startPolling();renderAll();document.getElementById('navMap').click()}
