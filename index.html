@@ -203,8 +203,19 @@ async function doTrack(name,idx){addLog('📍 '+myName+' 定位 '+name);alert('�
 async function doRevive(name,idx){await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);addLog('🔄 '+myName+' 复活了 '+name);speak(name+'复活了！');myItems.splice(idx,1);saveItems();closeModal('useModal');loadPlayers();renderAll()}
 async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)return;const info=gameMode==='chess'?'身份：'+(p.chess_role||'未知'):'队伍：'+(p.team||'无');addLog('🔎 '+name+' - '+info);speak(name+' - '+info);alert('🔎 '+name+'：'+info);myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 
-function renderAll(){const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);document.getElementById('aliveNum').textContent=alv.length;document.getElementById('waitNum').textContent=wait.length;document.getElementById('deadNum').textContent=ded.length;document.getElementById('playerList').innerHTML=players.map(p=>{let cls='live';if(!p.alive)cls='dead';if(p.waitingKill)cls='wait';return `<div class="prow ${cls}" onclick="${p.alive&&!p.waitingKill&&p.name!==myName?"clickP('"+p.name+"')":''}"><span>${!p.alive?'💀':p.waitingKill?'🟠':'🟢'} ${p.name}${p.name===myName?' (你)':''}${gameMode==='chess'&&p.chess_role?' ['+p.chess_role+']':''}${p.team?(' '+(p.team==='red'?'🔴':'🔵')):''}</span><span class="hearts">${'❤️'.repeat(p.hearts||0)||'🖤'}</span></div>`}).join('');document.getElementById('bagArea').innerHTML=myItems.length?myItems.map((it,i)=>`<button class="btn btn-sm btn-gold" onclick="useItem(${i})">${it.icon} ${it.name}</button>`).join(' '):'<span style="color:#888">空空如也</span>';document.getElementById('logArea').innerHTML=gameLog.slice(-10).reverse().map(l=>`<div style="padding:2px 0;border-bottom:1px solid #222"><span style="color:#555;font-size:10px">${l.time}</span> ${l.msg}</div>`).join('')}
-function addLog(msg){gameLog.push({msg,time:new Date().toLocaleTimeString()});renderAll()}
+function renderAll(){
+    const me=players.find(p=>p.name===myName);
+    const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);
+    document.getElementById('aliveNum').textContent=alv.length;
+    document.getElementById('waitNum').textContent=wait.length;
+    document.getElementById('deadNum').textContent=ded.length;
+    document.getElementById('playerList').innerHTML=players.map(p=>{
+        let cls='live';if(!p.alive)cls='dead';if(p.waitingKill)cls='wait';
+        return `<div class="prow ${cls}" onclick="${p.alive&&!p.waitingKill&&p.name!==myName?"clickP('"+p.name+"')":''}"><span>${!p.alive?'💀':p.waitingKill?'🟠':'🟢'} ${p.name}${p.name===myName?' (你)':''}${gameMode==='chess'&&p.chess_role&&(p.name===myName||p.team===me.team)?' ['+p.chess_role+']':''}${p.team?(' '+(p.team==='red'?'🔴':'🔵')):''}</span><span class="hearts">${'❤️'.repeat(p.hearts||0)||'🖤'}</span></div>`;
+    }).join('');
+    document.getElementById('bagArea').innerHTML=myItems.length?myItems.map((it,i)=>`<button class="btn btn-sm btn-gold" onclick="useItem(${i})">${it.icon} ${it.name}</button>`).join(' '):'<span style="color:#888">空空如也</span>';
+    document.getElementById('logArea').innerHTML=gameLog.slice(-10).reverse().map(l=>`<div style="padding:2px 0;border-bottom:1px solid #222"><span style="color:#555;font-size:10px">${l.time}</span> ${l.msg}</div>`).join('');
+}
 async function saveItems(){await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName)}
 
 document.getElementById('btnLoginTop').addEventListener('click',()=>showModal('authModal'));
