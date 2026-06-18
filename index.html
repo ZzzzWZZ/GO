@@ -202,7 +202,7 @@ function useItem(idx){const item=myItems[idx];if(item.type==='track'){const tg=p
 async function doTrack(name,idx){addLog('📍 '+myName+' 定位 '+name);alert('📍 '+name+' 已定位');myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 async function doRevive(name,idx){await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);addLog('🔄 '+myName+' 复活了 '+name);speak(name+'复活了！');myItems.splice(idx,1);saveItems();closeModal('useModal');loadPlayers();renderAll()}
 async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)return;const info=gameMode==='chess'?'身份：'+(p.chess_role||'未知'):'队伍：'+(p.team||'无');addLog('🔎 '+name+' - '+info);speak(name+' - '+info);alert('🔎 '+name+'：'+info);myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
-
+function addLog(msg){gameLog.push({msg,time:new Date().toLocaleTimeString()});renderAll()}
 function renderAll(){
     const me=players.find(p=>p.name===myName);
     const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);
