@@ -166,7 +166,7 @@ function renderFreePanel(data){const p=document.getElementById('freePanel');cons
 async function pickTeam(name,team){await sb.from('players').update({team}).eq('room_id',roomId).eq('name',name);refreshLobby()}
 async function leaveLobby(){clearInterval(lobbyTimer);if(roomId)await sb.from('players').delete().eq('room_id',roomId).eq('name',myName)}
 
-async function startGame(){RANGE_R=parseInt(document.getElementById('rangeSelect').value);const assignMode=document.getElementById('assignSelect')?document.getElementById('assignSelect').value:'random';if(assignMode==='random'&&(document.getElementById('classicTeamSelect').value==='teams'||gameMode==='chess')){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data)data.forEach((p,i)=>{sb.from('players').update({team:i%2===0?'red':'blue'}).eq('room_id',roomId).eq('name',p.name)})}if(gameMode==='chess'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){const sh=[...CHESS_RANKS].sort(()=>Math.random()-.5);for(let i=0;i<data.length;i++){await sb.from('players').update({chess_role:sh[i%sh.length]}).eq('room_id',roomId).eq('name',data[i].name)}:sh[i%sh.length]}).eq('room_id',roomId).eq('name',p.name)})}}await sb.from('rooms').update({status:'playing',range_r:RANGE_R,center_lat:CENTER.lat,center_lng:CENTER.lng}).eq('id',roomId);clearInterval(lobbyTimer);await loadPlayers();startGameScreen()}
+async function startGame(){RANGE_R=parseInt(document.getElementById('rangeSelect').value);const assignMode=document.getElementById('assignSelect')?document.getElementById('assignSelect').value:'random';if(assignMode==='random'&&(document.getElementById('classicTeamSelect').value==='teams'||gameMode==='chess')){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data)for(let i=0;i<data.length;i++){await sb.from('players').update({team:i%2===0?'red':'blue'}).eq('room_id',roomId).eq('name',data[i].name)}}if(gameMode==='chess'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){const sh=[...CHESS_RANKS].sort(()=>Math.random()-.5);for(let i=0;i<data.length;i++){await sb.from('players').update({chess_role:sh[i%sh.length]}).eq('room_id',roomId).eq('name',data[i].name)}}}await sb.from('rooms').update({status:'playing',range_r:RANGE_R,center_lat:CENTER.lat,center_lng:CENTER.lng}).eq('id',roomId);clearInterval(lobbyTimer);await loadPlayers();startGameScreen()}
 function startGameScreen(){showScreen('screenGame');document.getElementById('gameRoomDisp').textContent=roomId;document.getElementById('gameModeTitle').textContent=gameMode==='chess'?'象棋模式':'经典模式';myItems=[];gameLog=[];addLog('🎮 游戏开始！');speak('游戏开始！');initGameMap();spawnDropItem();startDropTimer();startPolling();renderAll();document.getElementById('navMap').click()}
 
 function initLobbyMap(){setTimeout(()=>{if(typeof AMap==='undefined')return;lobbyMap=new AMap.Map('lobbyMapInner',{zoom:16});getUserPosForLobby();lobbyMap.on('click',e=>{if(!isHost)return;CENTER={lat:e.lnglat.lat,lng:e.lnglat.lng};lobbyMap.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(lobbyMap);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(lobbyMap)})},500)}
@@ -207,9 +207,7 @@ async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)re
 function renderAll(){
     const me=players.find(p=>p.name===myName);
     const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);
-    document.getElementById('aliveNum').textContent=alv.length;
-    document.getElementById('waitNum').textContent=wait.length;
-    document.getElementById('deadNum').textContent=ded.length;
+    document.getElementById('aliveNum').textContent=alv.length;document.getElementById('waitNum').textContent=wait.length;document.getElementById('deadNum').textContent=ded.length;
     document.getElementById('playerList').innerHTML=players.map(p=>{
         let cls='live';if(!p.alive)cls='dead';if(p.waitingKill)cls='wait';
         return `<div class="prow ${cls}" onclick="${p.alive&&!p.waitingKill&&p.name!==myName?"clickP('"+p.name+"')":''}"><span>${!p.alive?'💀':p.waitingKill?'🟠':'🟢'} ${p.name}${p.name===myName?' (你)':''}${gameMode==='chess'&&p.chess_role&&(p.name===myName||p.team===me.team)?' ['+p.chess_role+']':''}${p.team?(' '+(p.team==='red'?'🔴':'🔵')):''}</span><span class="hearts">${'❤️'.repeat(p.hearts||0)||'🖤'}</span></div>`;
@@ -217,7 +215,6 @@ function renderAll(){
     document.getElementById('bagArea').innerHTML=myItems.length?myItems.map((it,i)=>`<button class="btn btn-sm btn-gold" onclick="useItem(${i})">${it.icon} ${it.name}</button>`).join(' '):'<span style="color:#888">空空如也</span>';
     document.getElementById('logArea').innerHTML=gameLog.slice(-10).reverse().map(l=>`<div style="padding:2px 0;border-bottom:1px solid #222"><span style="color:#555;font-size:10px">${l.time}</span> ${l.msg}</div>`).join('');
 }
-function addLog(msg){gameLog.push({msg,time:new Date().toLocaleTimeString()});renderAll()}
 async function saveItems(){await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName)}
 
 document.getElementById('btnLoginTop').addEventListener('click',()=>showModal('authModal'));
