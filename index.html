@@ -149,6 +149,7 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 function showModal(id){document.getElementById(id).classList.add('show')}
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 function speak(text){if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=1.3;u.pitch=1.3;speechSynthesis.speak(u)}}
+function addLog(msg){gameLog.push({msg,time:new Date().toLocaleTimeString()});renderAll()}
 
 function switchAuthMode(){authMode=authMode==='login'?'register':'login';document.getElementById('authTitle').textContent=authMode==='login'?'🔐 登录':'📝 注册';document.getElementById('btnAuth').textContent=authMode==='login'?'登录':'注册'}
 async function handleAuth(){const u=document.getElementById('authUsername').value.trim(),p=document.getElementById('authPassword').value.trim();if(!u||!p)return alert('请输入用户名和密码');if(authMode==='register'){const{data:ex}=await sb.from('users').select('*').eq('username',u).single();if(ex)return alert('用户名已存在');await sb.from('users').insert({username:u,password:p});alert('注册成功！请登录');switchAuthMode()}else{const{data:user}=await sb.from('users').select('*').eq('username',u).eq('password',p).single();if(!user)return alert('用户名或密码错误');currentUser=user;myName=u;document.getElementById('userDisplay').textContent='👤 '+u;document.getElementById('btnLoginTop').textContent='退出';document.getElementById('btnLoginTop').onclick=logout;document.getElementById('btnEnter').disabled=false;document.getElementById('btnEnter').classList.remove('btn-disabled');document.getElementById('loginTip').textContent='✅ 已登录：'+u;closeModal('authModal')}}
@@ -202,7 +203,7 @@ function useItem(idx){const item=myItems[idx];if(item.type==='track'){const tg=p
 async function doTrack(name,idx){addLog('📍 '+myName+' 定位 '+name);alert('📍 '+name+' 已定位');myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 async function doRevive(name,idx){await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);addLog('🔄 '+myName+' 复活了 '+name);speak(name+'复活了！');myItems.splice(idx,1);saveItems();closeModal('useModal');loadPlayers();renderAll()}
 async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)return;const info=gameMode==='chess'?'身份：'+(p.chess_role||'未知'):'队伍：'+(p.team||'无');addLog('🔎 '+name+' - '+info);speak(name+' - '+info);alert('🔎 '+name+'：'+info);myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
-function addLog(msg){gameLog.push({msg,time:new Date().toLocaleTimeString()});renderAll()}
+
 function renderAll(){
     const me=players.find(p=>p.name===myName);
     const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);
@@ -216,6 +217,7 @@ function renderAll(){
     document.getElementById('bagArea').innerHTML=myItems.length?myItems.map((it,i)=>`<button class="btn btn-sm btn-gold" onclick="useItem(${i})">${it.icon} ${it.name}</button>`).join(' '):'<span style="color:#888">空空如也</span>';
     document.getElementById('logArea').innerHTML=gameLog.slice(-10).reverse().map(l=>`<div style="padding:2px 0;border-bottom:1px solid #222"><span style="color:#555;font-size:10px">${l.time}</span> ${l.msg}</div>`).join('');
 }
+function addLog(msg){gameLog.push({msg,time:new Date().toLocaleTimeString()});renderAll()}
 async function saveItems(){await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName)}
 
 document.getElementById('btnLoginTop').addEventListener('click',()=>showModal('authModal'));
