@@ -197,7 +197,7 @@ function showDropOnMap(){
 async function checkRoomDrop(){const{data:room}=await sb.from('rooms').select('drop_item').eq('id',roomId).single();if(room&&room.drop_item){try{const item=JSON.parse(room.drop_item);if(item&&item.name&&(!currentDrop||currentDrop.name!==item.name)){currentDrop=item;showDropOnMap()}}catch(e){}}}
 function checkDropDist(){if(!currentDrop||!userPos)return;const d=dist(userPos,currentDrop);if(d<=10){document.getElementById('dropCard').classList.add('show');document.getElementById('dropDist').textContent='📏 '+d+' 米 ✅'}else{document.getElementById('dropDist').textContent='📏 '+d+' 米'}}
 async function pickupItem(){if(!currentDrop)return;const d=userPos?dist(userPos,currentDrop):999;if(d>10)return alert('❌ 距离太远！');myItems.push({name:currentDrop.name,icon:currentDrop.icon,type:currentDrop.type});addLog('🎁 '+myName+' 拾取了 '+currentDrop.name);speak(myName+'拾取了'+currentDrop.name);currentDrop=null;document.getElementById('dropCard').classList.remove('show');if(dropMarker){dropMarker.setMap(null);dropMarker=null}await sb.from('rooms').update({drop_item:null}).eq('id',roomId);saveItems();renderAll()}
-function startDropTimer(){if(dropTimer)clearInterval(dropTimer);dropSec=480;updateDropDisplay();dropTimer=setInterval(async()=>{dropSec--;updateDropDisplay();if(dropSec<=0){await spawnDropItem();dropSec=480}},1000)}
+function startDropTimer(){if(dropTimer)return;dropSec=480;updateDropDisplay();dropTimer=setInterval(async()=>{dropSec--;updateDropDisplay();if(dropSec<=0){await spawnDropItem();dropSec=480}},1000)}
 function updateDropDisplay(){const m=Math.floor(dropSec/60),s=dropSec%60;document.getElementById('dropCountdown').textContent=m+':'+String(s).padStart(2,'0')}
 
 let currentPanel=null;
