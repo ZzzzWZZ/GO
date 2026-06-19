@@ -97,6 +97,7 @@
 </div>
 <button class="btn btn-green" onclick="closeModal('mainMenuModal');showJoinPanel()">🎮 加入房间</button>
 <button class="btn btn-sm" onclick="closeModal('mainMenuModal')" style="background:transparent;color:#888">取消</button></div></div>
+
 <div class="screen lobby" id="screenLobby">
     <span class="mode-tag" id="modeTag">🏆 经典模式</span><h2>⏳ 等待大厅</h2>
     <p class="room-info">房间号：<strong style="color:#ffd100" id="lobbyRoomDisp">----</strong> <span id="hostTag"></span></p>
@@ -171,20 +172,16 @@ function renderFreePanel(data){const p=document.getElementById('freePanel');cons
 async function pickTeam(name,team){await sb.from('players').update({team}).eq('room_id',roomId).eq('name',name);refreshLobby()}
 async function leaveLobby(){clearInterval(lobbyTimer);if(roomId)await sb.from('players').delete().eq('room_id',roomId).eq('name',myName)}
 
-// ============ 开始游戏 ============
 async function startGame(){RANGE_R=parseInt(document.getElementById('rangeSelect')?.value||300);const assignEl=document.getElementById('assignSelect');const assignMode=assignEl?assignEl.value:'random';const teamEl=document.getElementById('classicTeamSelect');if(assignMode==='random'&&((teamEl&&teamEl.value==='teams')||gameMode==='chess')){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data)for(let i=0;i<data.length;i++){await sb.from('players').update({team:i%2===0?'red':'blue'}).eq('room_id',roomId).eq('name',data[i].name)}}if(gameMode==='chess'){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data){const reds=data.filter(p=>p.team==='red'),blues=data.filter(p=>p.team==='blue');const redRoles=['帅','相','车','炮','兵'],blueRoles=['将','象','车','炮','卒'];const shRed=[...redRoles].sort(()=>Math.random()-.5);const shBlue=[...blueRoles].sort(()=>Math.random()-.5);for(let i=0;i<reds.length;i++){const role=(i<5)?shRed[i]:shRed[Math.floor(Math.random()*4+1)];await sb.from('players').update({chess_role:role}).eq('room_id',roomId).eq('name',reds[i].name)}for(let i=0;i<blues.length;i++){const role=(i<5)?shBlue[i]:shBlue[Math.floor(Math.random()*4+1)];await sb.from('players').update({chess_role:role}).eq('room_id',roomId).eq('name',blues[i].name)}}}await sb.from('rooms').update({status:'playing',range_r:RANGE_R,center_lat:CENTER.lat,center_lng:CENTER.lng}).eq('id',roomId);clearInterval(lobbyTimer);await loadPlayers();startGameScreen()}
 function startGameScreen(){showScreen('screenGame');document.getElementById('gameRoomDisp').textContent=roomId;document.getElementById('gameModeTitle').textContent=gameMode==='chess'?'象棋模式':'经典模式';myItems=[];gameLog=[];addLog('🎮 游戏开始！');speak('游戏开始！');initGameMap();currentDrop=null;startDropTimer();startPolling();renderAll()}
 
-// ============ 地图 ============
 function initLobbyMap(){if(typeof AMap==='undefined'){setTimeout(initLobbyMap,500);return}const el=document.getElementById('lobbyMapInner');if(!el)return;const lobbyMap=new AMap.Map('lobbyMapInner',{zoom:16});getUserPosForLobby(lobbyMap);lobbyMap.on('click',e=>{if(!isHost)return;CENTER={lat:e.lnglat.lat,lng:e.lnglat.lng};lobbyMap.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(lobbyMap);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(lobbyMap)})}
 function initGameMap(){if(typeof AMap==='undefined'){setTimeout(initGameMap,500);return}gameMap=new AMap.Map('gameMapFull',{zoom:17});rangeCircle=new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]});rangeCircle.setMap(gameMap);getUserPosGame()}
 function getUserPosForLobby(map){if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>{CENTER={lat:p.coords.latitude,lng:p.coords.longitude};if(map){map.setCenter([CENTER.lng,CENTER.lat]);map.clearMap();new AMap.Circle({center:[CENTER.lng,CENTER.lat],radius:RANGE_R,fillOpacity:.06,strokeColor:'#00b894',strokeWeight:3,strokeDasharray:[8,5]}).setMap(map);new AMap.Marker({position:[CENTER.lng,CENTER.lat],content:'<div style="background:#e17055;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">📍 中心点</div>',offset:new AMap.Pixel(-25,-15)}).setMap(map)}},()=>{},{enableHighAccuracy:true,timeout:10000})}
 function getUserPosGame(){if(navigator.geolocation)navigator.geolocation.watchPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};if(gameMap&&userMarker)userMarker.setPosition([userPos.lng,userPos.lat]);else if(gameMap){userMarker=new AMap.Marker({position:[userPos.lng,userPos.lat],content:'<div style="background:#0984e3;color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">⚡ 我</div>',offset:new AMap.Pixel(-15,-15)});userMarker.setMap(gameMap)}checkDropDist()},()=>{},{enableHighAccuracy:true})}
 function dist(a,b){const R=6371000;const dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)))}
 
-// ============ 道具系统（房主生成，云端同步） ============
 async function spawnDropItem(){
-    if(!isHost)return;
     const item=itemPool[Math.floor(Math.random()*itemPool.length)],rlat=CENTER.lat+(Math.random()-.5)*.003,rlng=CENTER.lng+(Math.random()-.5)*.003;
     currentDrop={name:item.name,icon:item.icon,type:item.type,lat:rlat,lng:rlng};
     await sb.from('rooms').update({drop_item:JSON.stringify(currentDrop)}).eq('id',roomId);
@@ -197,13 +194,12 @@ function showDropOnMap(){
     if(gameMap){dropMarker=new AMap.Marker({position:[currentDrop.lng,currentDrop.lat],content:'<div style="background:#ffd100;color:#333;padding:4px 10px;border-radius:14px;font-size:12px">'+currentDrop.icon+'</div>',offset:new AMap.Pixel(-15,-15)});dropMarker.setMap(gameMap)}
     speak('道具已刷新！');
 }
-async function checkRoomDrop(){if(isHost)return;const{data:room}=await sb.from('rooms').select('drop_item').eq('id',roomId).single();if(room&&room.drop_item){try{const item=JSON.parse(room.drop_item);if(item&&item.name&&(!currentDrop||currentDrop.name!==item.name)){currentDrop=item;showDropOnMap()}}catch(e){}}}
+async function checkRoomDrop(){const{data:room}=await sb.from('rooms').select('drop_item').eq('id',roomId).single();if(room&&room.drop_item){try{const item=JSON.parse(room.drop_item);if(item&&item.name&&(!currentDrop||currentDrop.name!==item.name)){currentDrop=item;showDropOnMap()}}catch(e){}}}
 function checkDropDist(){if(!currentDrop||!userPos)return;const d=dist(userPos,currentDrop);if(d<=10){document.getElementById('dropCard').classList.add('show');document.getElementById('dropDist').textContent='📏 '+d+' 米 ✅'}else{document.getElementById('dropDist').textContent='📏 '+d+' 米'}}
 async function pickupItem(){if(!currentDrop)return;const d=userPos?dist(userPos,currentDrop):999;if(d>10)return alert('❌ 距离太远！');myItems.push({name:currentDrop.name,icon:currentDrop.icon,type:currentDrop.type});addLog('🎁 '+myName+' 拾取了 '+currentDrop.name);speak(myName+'拾取了'+currentDrop.name);currentDrop=null;document.getElementById('dropCard').classList.remove('show');if(dropMarker){dropMarker.setMap(null);dropMarker=null}await sb.from('rooms').update({drop_item:null}).eq('id',roomId);saveItems();renderAll()}
-function startDropTimer(){dropSec=480;updateDropDisplay();dropTimer=setInterval(async()=>{dropSec--;updateDropDisplay();if(dropSec<=0){if(isHost)await spawnDropItem();dropSec=480}},1000)}
+function startDropTimer(){if(dropTimer)clearInterval(dropTimer);dropSec=480;updateDropDisplay();dropTimer=setInterval(async()=>{dropSec--;updateDropDisplay();if(dropSec<=0){await spawnDropItem();dropSec=480}},1000)}
 function updateDropDisplay(){const m=Math.floor(dropSec/60),s=dropSec%60;document.getElementById('dropCountdown').textContent=m+':'+String(s).padStart(2,'0')}
 
-// ============ 面板切换 ============
 let currentPanel=null;
 function togglePanel(name){
     const panels={players:'panelPlayers',bag:'panelBag',log:'panelLog'};
@@ -215,21 +211,17 @@ function togglePanel(name){
     document.getElementById(btns[name]).classList.add('active');
 }
 
-// ============ 加载玩家 ============
 async function loadPlayers(){const{data}=await sb.from('players').select('*').eq('room_id',roomId);if(data)players=data.map(p=>({id:p.id,name:p.name,alive:p.alive,waitingKill:p.waiting_kill,hearts:p.hearts||1,team:p.team,chess_role:p.chess_role}));const me=players.find(p=>p.name===myName);if(me&&me.waitingKill&&!document.getElementById('confirmModal').classList.contains('show')){if(gameMode==='chess'){handleChessKill(me.waitingKill,myName)}else{document.getElementById('confirmKiller').textContent=me.waitingKill;showModal('confirmModal');speak('你被'+me.waitingKill+'撕了！')}}}
 function startPolling(){pollTimer=setInterval(async()=>{await loadPlayers();checkRoomDrop();renderAll();checkEnd()},2000)}
 function checkEnd(){const alv=players.filter(p=>p.alive);if(alv.length<=1&&players.length>0){const w=alv[0]?.name||'无人';addLog('🏆 游戏结束！获胜者：'+w);speak('游戏结束！');clearInterval(pollTimer);clearInterval(dropTimer);document.getElementById('winName').textContent=w;document.getElementById('winOverlay').classList.add('show')}}
 
-// ============ 象棋判定 ============
 async function handleChessKill(attacker,target){const a=players.find(p=>p.name===attacker),t=players.find(p=>p.name===target);if(!a||!t)return;const al=CHESS_LEVEL[a.chess_role]||0,tl=CHESS_LEVEL[t.chess_role]||0;let r='';if(a.chess_role==='兵'||a.chess_role==='卒'){if(t.chess_role==='帅'||t.chess_role==='将')r='kill_target'}else if(al>tl)r='kill_target';else if(al<tl){r=document.getElementById('chessLowRule')?.value==='freeze'?'freeze':'kill_attacker'}else r='both';if(r==='kill_target'){t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',target);addLog('💀 '+attacker+' 淘汰 '+target);speak(attacker+'淘汰了'+target)}else if(r==='kill_attacker'){a.alive=false;a.hearts=0;await sb.from('players').update({alive:false,hearts:0,waiting_kill:null}).eq('room_id',roomId).eq('name',attacker);addLog('💀 '+attacker+' 逆撕失败');speak(attacker+'逆撕失败！')}else if(r==='both'){a.alive=false;a.hearts=0;t.alive=false;t.hearts=0;await sb.from('players').update({alive:false,hearts:0}).eq('room_id',roomId).eq('name',attacker);await sb.from('players').update({alive:false,hearts:0}).eq('room_id',roomId).eq('name',target);addLog('💀 同归于尽');speak('同归于尽！')}else if(r==='freeze'){addLog('❄️ '+target+' 被冻结30秒');speak(target+'被冻结30秒')}renderAll();checkEnd()}
 
-// ============ 淘汰 ============
 function clickP(name){if(name===myName)return;const me=players.find(p=>p.name===myName);if(!me||!me.alive)return;const p=players.find(p=>p.name===name);if(!p||!p.alive||p.waitingKill)return;if(me.team&&p.team&&me.team===p.team)return alert('不能撕队友！');if(gameMode==='chess'){handleChessKill(myName,name);return}killTarget=name;document.getElementById('killName').textContent=name;showModal('killModal')}
 async function doKill(){if(!killTarget)return;const p=players.find(p=>p.name===killTarget);if(!p)return;if(p.hearts>1){p.hearts--;await sb.from('players').update({hearts:p.hearts}).eq('room_id',roomId).eq('name',killTarget);addLog('💚 '+killTarget+' 消耗一心剩'+p.hearts);speak(killTarget+'失去一颗心！')}else{p.waitingKill=myName;await sb.from('players').update({waiting_kill:myName}).eq('room_id',roomId).eq('name',killTarget);addLog('⚡ '+myName+' 发起淘汰 '+killTarget)}closeModal('killModal');killTarget='';await loadPlayers();renderAll()}
 async function confirmKilled(){const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;const kn=me.waitingKill;me.alive=false;me.waitingKill=null;await sb.from('players').update({alive:false,waiting_kill:null}).eq('room_id',roomId).eq('name',myName);addLog('💀 '+kn+' 淘汰了 '+myName);speak(kn+'淘汰了'+myName);closeModal('confirmModal');checkRevive();const rwd=itemPool[Math.floor(Math.random()*6)];myItems.push(rwd);addLog('🏆 奖励：'+rwd.name);saveItems();await loadPlayers();renderAll();checkEnd()}
 async function denyKill(){const me=players.find(p=>p.name===myName);if(!me||!me.waitingKill)return;me.waitingKill=null;await sb.from('players').update({waiting_kill:null}).eq('room_id',roomId).eq('name',myName);addLog('🤚 '+myName+' 否认被撕');closeModal('confirmModal');await loadPlayers();renderAll()}
 
-// ============ 复活 ============
 function checkRevive(){const me=players.find(p=>p.name===myName);if(!me||me.alive)return;const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;reviveSec=180;document.getElementById('reviveBar').style.display='block';updateReviveCountdown();reviveTimer=setInterval(()=>{reviveSec--;updateReviveCountdown();if(reviveSec<=0)declineRevive()},1000)}
 function updateReviveCountdown(){document.getElementById('reviveCountdown').textContent=Math.floor(reviveSec/60)+':'+String(reviveSec%60).padStart(2,'0')}
 function useReviveSelf(){const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;const me=players.find(p=>p.name===myName);if(!me)return;me.alive=true;me.hearts=1;sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',myName);myItems.splice(idx,1);saveItems();clearReviveBar();addLog('🔄 '+myName+' 复活了自己');speak(myName+'复活了！');loadPlayers();renderAll()}
@@ -237,13 +229,11 @@ function showReviveTeammate(){showModal('reviveModal');const d=players.filter(p=
 async function reviveTeammate(name){const idx=myItems.findIndex(i=>i.type==='revive');if(idx===-1)return;await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);myItems.splice(idx,1);saveItems();closeModal('reviveModal');clearReviveBar();addLog('🔄 '+myName+' 复活了 '+name);speak(name+'复活了！');loadPlayers();renderAll()}
 function declineRevive(){clearReviveBar()}function clearReviveBar(){clearInterval(reviveTimer);document.getElementById('reviveBar').style.display='none'}
 
-// ============ 道具使用 ============
 function useItem(idx){const item=myItems[idx];if(item.type==='track'){const tg=players.filter(p=>p.alive&&p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='📍 定位卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doTrack('${p.name}',${idx})">📍 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='revive'){const tg=players.filter(p=>!p.alive);if(!tg.length)return alert('无人可复活');document.getElementById('useTitle').textContent='🔄 复活卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-green" onclick="doRevive('${p.name}',${idx})">🔄 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='radar'){const alv=players.filter(p=>p.alive);document.getElementById('useTitle').textContent='🔮 雷达卡';document.getElementById('useBody').innerHTML='<p style="color:#00b894">📡 存活：'+alv.map(p=>p.name).join('、')+'</p>';showModal('useModal');myItems.splice(idx,1);saveItems();addLog('🔮 使用雷达卡');speak('雷达扫描完成');setTimeout(()=>{closeModal('useModal');renderAll()},2000)}else if(item.type==='scout'){const tg=players.filter(p=>p.name!==myName);if(!tg.length)return alert('无目标');document.getElementById('useTitle').textContent='🔎 侦查卡';document.getElementById('useBody').innerHTML=tg.map(p=>`<button class="btn btn-gold" onclick="doScout('${p.name}',${idx})">🔎 ${p.name}</button>`).join('');showModal('useModal')}else if(item.type==='double'){const me=players.find(p=>p.name===myName);if(!me)return;me.hearts=(me.hearts||1)+1;sb.from('players').update({hearts:me.hearts}).eq('room_id',roomId).eq('name',myName);myItems.splice(idx,1);saveItems();addLog('💚 '+myName+' 使用双命卡');speak(myName+'生命+1！');renderAll()}else if(item.type==='rebound'){alert('🛡️ 反弹卡已自动装备')}}
 async function doTrack(name,idx){addLog('📍 '+myName+' 定位 '+name);alert('📍 '+name+' 已定位');myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 async function doRevive(name,idx){await sb.from('players').update({alive:true,hearts:1}).eq('room_id',roomId).eq('name',name);addLog('🔄 '+myName+' 复活了 '+name);speak(name+'复活了！');myItems.splice(idx,1);saveItems();closeModal('useModal');loadPlayers();renderAll()}
 async function doScout(name,idx){const p=players.find(p=>p.name===name);if(!p)return;const info=gameMode==='chess'?'身份：'+(p.chess_role||'未知'):'队伍：'+(p.team||'无');addLog('🔎 '+name+' - '+info);speak(name+' - '+info);alert('🔎 '+name+'：'+info);myItems.splice(idx,1);saveItems();closeModal('useModal');renderAll()}
 
-// ============ 渲染 ============
 function renderAll(){
     const me=players.find(p=>p.name===myName);
     const alv=players.filter(p=>p.alive),ded=players.filter(p=>!p.alive),wait=players.filter(p=>p.waitingKill);
@@ -254,7 +244,6 @@ function renderAll(){
 }
 async function saveItems(){await sb.from('players').update({items:JSON.stringify(myItems)}).eq('room_id',roomId).eq('name',myName)}
 
-// ============ 按钮绑定 ============
 document.getElementById('btnLoginTop').addEventListener('click',()=>showModal('authModal'));
 document.getElementById('btnAuth').addEventListener('click',handleAuth);
 document.getElementById('btnEnter').addEventListener('click',()=>showModal('mainMenuModal'));
