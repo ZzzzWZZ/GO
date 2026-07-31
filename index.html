@@ -169,7 +169,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const AMAP_KEY='12530b113a60115d9e162efd22d93558';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let myName='',roomId='',isHost=false,currentUser=null,gameMode='classic',players=[],myItems=[],gameLog=[],pollTimer=null,lobbyTimer=null;
-let userPos=null,CENTER={lat:39.909,lng:116.397},RANGE_R=300,currentDrop=null,dropSec=480,dropTimer=null;
+let userPos=null,CENTER={lat:39.909,lng:116.397},RANGE_R=300,currentDrop=null,dropSec=300,dropTimer=null;
 let gameMap=null,userMarker=null,dropMarker=null,rangeCircle=null;
 let reviveTimer=null,reviveSec=180,authMode='login',killTarget='';
 let globalTrackEnabled=false,globalTrackActive=false,reboundDropCount=0,gameTime=0,killStats={};
@@ -222,7 +222,7 @@ function showDropOnMap(){if(!currentDrop)return;document.getElementById('dropCar
 async function checkRoomDrop(){const{data:room}=await sb.from('rooms').select('drop_item').eq('id',roomId).single();if(room&&room.drop_item){try{const item=JSON.parse(room.drop_item);if(item&&item.name&&(!currentDrop||currentDrop.name!==item.name)){currentDrop=item;showDropOnMap()}}catch(e){}}}
 function checkDropDist(){if(!currentDrop||!userPos)return;const d=dist(userPos,currentDrop);if(d<=10){document.getElementById('dropCard').classList.add('show');document.getElementById('dropDist').textContent='📏 '+d+' 米 ✅'}else{document.getElementById('dropDist').textContent='📏 '+d+' 米'}}
 async function pickupItem(){if(!currentDrop)return;const d=userPos?dist(userPos,currentDrop):999;if(d>10)return alert('❌ 距离太远！');myItems.push({name:currentDrop.name,icon:currentDrop.icon,type:currentDrop.type});addLog('🎁 '+myName+' 拾取了 '+currentDrop.name);speakAll(myName+'拾取了'+currentDrop.name);sfx('pickup');currentDrop=null;document.getElementById('dropCard').classList.remove('show');if(dropMarker){dropMarker.setMap(null);dropMarker=null}await sb.from('rooms').update({drop_item:null}).eq('id',roomId);saveItems();renderAll()}
-function startDropTimer(){if(dropTimer)return;dropSec=480;updateDropDisplay();dropTimer=setInterval(async()=>{dropSec--;updateDropDisplay();if(dropSec<=0){await spawnDropItem();dropSec=480}},1000)}
+function startDropTimer(){if(dropTimer)return;dropSec=300;updateDropDisplay();dropTimer=setInterval(async()=>{dropSec--;updateDropDisplay();if(dropSec<=0){await spawnDropItem();dropSec=300}},1000)}
 function updateDropDisplay(){const m=Math.floor(dropSec/60),s=dropSec%60;document.getElementById('dropCountdown').textContent=m+':'+String(s).padStart(2,'0')}
 
 let currentPanel=null;
