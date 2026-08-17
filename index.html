@@ -220,8 +220,25 @@ function toggleTeamOpt(){const v=document.getElementById('classicTeamSelect')?.v
 function toggleAssignMode(){const fp=document.getElementById('freePanel');if(fp)fp.style.display=document.getElementById('assignSelect')?.value==='free'?'block':'none'}
 
 // ============ GPS状态 ============
-function checkMyGps(){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(()=>{myGpsReady=true;updateGpsDisplay()},()=>{myGpsReady=false;updateGpsDisplay()},{timeout:8000})}else{myGpsReady=false;updateGpsDisplay()}}
-function updateGpsDisplay(){if(!isHost)return;sb.from('players').select('gps_ready,name').eq('room_id',roomId).then(({data})=>{if(!data)return;const all=players.map(p=>data.find(x=>x.name===p.name)||{gps_ready:false});const ready=all.filter(p=>p.gps_ready).length;const total=all.length;document.getElementById('gpsWarning').textContent=ready===total&&total>0?'✅ 全员GPS就绪（'+ready+'/'+total+'）':'⚠️ 等待GPS定位（'+ready+'/'+total+'）';document.getElementById('startBtn').style.opacity=ready===total&&total>0?'1':'.5'})}
+function checkMyGps(){if(!navigator.geolocation){myGpsReady=false;updateGpsDisplay();return}
+    if(gpsWatcher)navigator.geolocation.clearWatch(gpsWatcher);
+    gpsWatcher=navigator.geolocation.watchPosition(
+        ()=>{myGpsReady=true;updateMyGpsToDb(true);updateGpsDisplay()},
+        ()=>{myGpsReady=false;updateMyGpsToDb(false);updateGpsDisplay()},
+        {enableHighAccuracy:true,timeout:15000,maximumAge:3000}
+    );
+}
+function updateGpsDisplay(){
+    if(!isHost)return;
+    sb.from('players').select('gps_ready,name').eq('room_id',roomId).then(({data})=>{
+        if(!data)return;
+        const total=players.length||data.length;
+        const ready=data.filter(p=>p.gps_ready).length;
+        document.getElementById('gpsWarning').textContent=ready===total&&total>0?'✅ 全员GPS就绪（'+ready+'/'+total+'）':'⚠️ 等待GPS定位（'+ready+'/'+total+'）';
+        document.getElementById('startBtn').style.opacity=ready===total&&total>0?'1':'.5';
+    });
+}
+
 
 // ============ 创建/加入房间 ============
 async function createRoom(mode){gameMode=mode||'classic';roomId=Math.floor(1000+Math.random()*9000).toString();isHost=true;myName=currentUser.username;document.getElementById('lobbyRoomDisp').textContent=roomId;document.getElementById('hostTag').textContent='(房主👑)';document.getElementById('startBtn').style.display='block';document.getElementById('modeTag').textContent=mode==='chess'?'♟️ 象棋模式':'🏆 经典模式';checkMyGps();updateMyGpsToDb(true);let setHTML=`<div class="map-box" id="lobbyMapBox"><div class="map-inner" id="lobbyMapInner"></div><div class="map-label">📍 点击地图设定中心</div></div><div class="setting-row"><span>🗺️ 活动半径</span><select id="rangeSelect"><option value="100">100米</option><option value="200">200米</option><option value="300" selected>300米</option><option value="400">400米</option><option value="500">500米</option></select></div>`;setHTML+=`<div class="setting-row"><span>🌐 全员实时定位</span><select id="globalTrackSelect"><option value="off">关闭</option><option value="on">20分钟后开启</option></select></div>`;if(mode==='chess'){setHTML+=`<div class="setting-row"><span>🎲 分配方式</span><select id="assignSelect" onchange="toggleAssignMode()"><option value="random">随机分配</option><option value="free">自由组队</option></select></div><div class="setting-row"><span>🔒 淘汰后身份</span><select id="chessReveal"><option value="reveal">公开</option><option value="hide">隐藏</option></select></div><div class="setting-row"><span>⚔️ 低撕高结果</span><select id="chessLowRule"><option value="kill">低等级淘汰</option><option value="freeze">高等级停留30秒</option></select></div><div id="freePanel" style="display:none;width:100%"></div>`}else{setHTML+=`<div class="setting-row"><span>👥 阵营</span><select id="classicTeamSelect" onchange="toggleTeamOpt()"><option value="none">无阵营</option><option value="teams">红蓝两队</option></select></div><div class="setting-row" id="assignRow" style="display:none"><span>🎲 分配方式</span><select id="assignSelect" onchange="toggleAssignMode()"><option value="random">随机分配</option><option value="free">自由组队</option></select></div><div id="freePanel" style="display:none;width:100%"></div>`}document.getElementById('lobbySettings').innerHTML=setHTML;showScreen('screenLobby');subscribeChannel();setTimeout(initLobbyMap,500);await sb.from('rooms').upsert({id:roomId,status:'waiting',host:myName,mode:gameMode,drop_item:null});await sb.from('players').upsert({room_id:roomId,name:myName,alive:true,hearts:1,team:null,chess_role:null,gps_ready:true},{onConflict:'room_id,name'});refreshLobby();lobbyTimer=setInterval(refreshLobby,2000);gpsCheckTimer=setInterval(updateGpsDisplay,3000)}
