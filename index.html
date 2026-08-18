@@ -220,24 +220,8 @@ function toggleTeamOpt(){const v=document.getElementById('classicTeamSelect')?.v
 function toggleAssignMode(){const fp=document.getElementById('freePanel');if(fp)fp.style.display=document.getElementById('assignSelect')?.value==='free'?'block':'none'}
 
 // ============ GPS状态 ============
-function checkMyGps(){if(!navigator.geolocation){myGpsReady=false;updateGpsDisplay();return}
-    if(gpsWatcher)navigator.geolocation.clearWatch(gpsWatcher);
-    gpsWatcher=navigator.geolocation.watchPosition(
-        ()=>{myGpsReady=true;updateMyGpsToDb(true);updateGpsDisplay()},
-        ()=>{myGpsReady=false;updateMyGpsToDb(false);updateGpsDisplay()},
-        {enableHighAccuracy:true,timeout:15000,maximumAge:3000}
-    );
-}
-function updateGpsDisplay(){
-    if(!isHost)return;
-    sb.from('players').select('gps_ready,name').eq('room_id',roomId).then(({data})=>{
-        if(!data)return;
-        const total=players.length||data.length;
-        const ready=data.filter(p=>p.gps_ready).length;
-        document.getElementById('gpsWarning').textContent=ready===total&&total>0?'✅ 全员GPS就绪（'+ready+'/'+total+'）':'⚠️ 等待GPS定位（'+ready+'/'+total+'）';
-        document.getElementById('startBtn').style.opacity=ready===total&&total>0?'1':'.5';
-    });
-}
+function checkMyGps(){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(()=>{myGpsReady=true;updateGpsDisplay()},()=>{myGpsReady=false;updateGpsDisplay()},{timeout:8000})}else{myGpsReady=false;updateGpsDisplay()}}
+function updateGpsDisplay(){if(!isHost)return;sb.from('players').select('gps_ready,name').eq('room_id',roomId).then(({data})=>{if(!data)return;const total=data.length;const ready=data.filter(p=>p.gps_ready).length;document.getElementById('gpsWarning').textContent=ready===total&&total>0?'✅ 全员GPS就绪（'+ready+'/'+total+'）':'⚠️ 等待GPS定位（'+ready+'/'+total+'）';document.getElementById('startBtn').style.opacity=ready===total&&total>0?'1':'.5'})}
 
 
 // ============ 创建/加入房间 ============
